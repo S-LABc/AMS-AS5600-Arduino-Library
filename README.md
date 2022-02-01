@@ -20,16 +20,16 @@
 
 <p align="center"><img src="/images/visually_software.jpg"></p>
 
-## Изображения
-<p align="center"><img src="/images/as5600_base.jpg"></p>
-
-<p align="center"><img src="/images/as5600_case_live.jpg"></p>
-
-<p align="center"><img src="/images/assembly_case_stl.jpg"></p>
-
 ## Ссылки
 * [Даташит AS5600](https://ams.com/documents/20143/36005/AS5600_DS000365_5-00.pdf)
 * [Страница AS5600](https://ams.com/en/as5600)
 * [Ядро ESP32](https://github.com/espressif/arduino-esp32)
 * [Ядро STM32 Роджера](https://github.com/rogerclarkmelbourne/Arduino_STM32)
 * [Ядро STM32 официальное](https://github.com/stm32duino/Arduino_Core_STM32)
+
+## Изображения
+<p align="center"><img src="/images/as5600_base.jpg"></p>
+
+<p align="center"><img src="/images/as5600_case_live.jpg"></p>
+
+<p align="center"><img src="/images/assembly_case_stl.jpg"></p>
