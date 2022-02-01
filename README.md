@@ -5,6 +5,7 @@
 * Наиболее полная и удобная библиотека Arduino IDE для работы с магнитным датчиком положения AS5600.
 * Устанавливается как обычная библиотека для Arduino IDE.
 * Скачать можно из раздела [Releases](https://github.com/S-LABc/AMS-AS5600-Arduino-Library/releases)
+* Посмотрите раздел [Wiki](https://github.com/S-LABc/AMS-AS5600-Arduino-Library/wiki) для более подробной информации
 
 ## Особенности
 * Полная поддержка всех функций датчика
