@@ -87,7 +87,7 @@ void createText(uint16_t angle_raw) {
   display.print("ADC:");
   display.println(angle_raw);
   display.print("ANG:");
-  display.print(angle_raw * 0.08791); // 360/4095=0.0879120879120879, 5 знаков после точки для АЦП 12 бит достаточно
+  display.print(angle_raw * 0.08789); // 360/4096=0,087890625, 5 знаков после точки для АЦП 12 бит достаточно
   display.display();
 }
 // Очистка старого ИЗО, установка шрифта, цвета, курсора
