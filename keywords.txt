@@ -137,6 +137,8 @@ disableWatchdog	KEYWORD2
 disableWatchdogVerify	KEYWORD2
 
 getRawAngle	KEYWORD2
+getDegreesAngle	KEYWORD2
+getRadiansAngle	KEYWORD2
 
 getScaledAngle	KEYWORD2
 

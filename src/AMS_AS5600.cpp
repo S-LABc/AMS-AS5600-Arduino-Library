@@ -13,7 +13,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.1 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.2 / License MIT / Скляр Роман S-LAB
  */
 
 #include "AMS_AS5600.h"
@@ -32,7 +32,7 @@ AS5600::AS5600(TwoWire *twi) : __wire(twi ? twi : &Wire) {
  * @para pin_dir: вывод микроконтроллер к которому подключен контакт DIR датчика
  * @param def_polar_dir: положительно направление вращения магнита (по/против часовой стрелки)
  */
-AS5600::AS5600(TwoWire *twi, uint8_t _pin_dir, AS5600DirectionPolarity _def_polar_dir) : __wire(twi ? twi : &Wire) {
+AS5600::AS5600(TwoWire *twi, int8_t _pin_dir, AS5600DirectionPolarity _def_polar_dir) : __wire(twi ? twi : &Wire) {
   _pin_direction_ = _pin_dir;
   pinMode(_pin_direction_, OUTPUT);
   digitalWrite(_pin_direction_, _def_polar_dir);
@@ -149,7 +149,6 @@ void AS5600::setClock(void) {
  * @brief: отключение шины I2C
  */
 void AS5600::end(void) {
-  // Настройка частоты 400кГц
   __wire->end();
 }
 /*
@@ -206,7 +205,7 @@ bool AS5600::isConnected(void) {
  *  AS5600_DEFAULT_REPORT_OK - направление изменено
  */
 bool AS5600::setDirection(AS5600DirectionPolarity _direction_polarity) {
-  if(!_pin_direction_) {
+  if(_pin_direction_ == -1) {
     return AS5600_DEFAULT_REPORT_ERROR;
   }
   digitalWrite(_pin_direction_, _direction_polarity);
@@ -220,7 +219,7 @@ bool AS5600::setDirection(AS5600DirectionPolarity _direction_polarity) {
  *  AS5600_DEFAULT_REPORT_OK - направление изменено
  */
 bool AS5600::reverseDirection(void) {
-  if(!_pin_direction_) {
+  if(_pin_direction_ == -1) {
     return AS5600_DEFAULT_REPORT_ERROR;
   }
   digitalWrite(_pin_direction_, !digitalRead(_pin_direction_));
@@ -1077,6 +1076,22 @@ bool AS5600::disableWatchdogVerify(void) {
 word AS5600::getRawAngle(void) {
   AS5600::AS_SendFirstRegister(AS5600_OUT_REG_RAW_ANGLE_H);
   return AS5600::AS_RequestPairRegisters();
+}
+/* 
+ * @brief: получить значение угла в градусах
+ * @return:
+ *  0.00 - 360.00
+ */
+float AS5600::getDegreesAngle(void) {
+  return ((float)AS5600::getRawAngle() * 360) / 4096;
+}
+/* 
+ * @brief: получить значение угла в радианах
+ * @return:
+ *  0.00 - 6.29
+ */
+float AS5600::getRadiansAngle(void) {
+  return (AS5600::getDegreesAngle() * M_PI) / 180;
 }
 /* 
  * @brief: получить масштабированное значение угла из регистра ANGLE(11:0)

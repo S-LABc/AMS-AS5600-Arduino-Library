@@ -13,7 +13,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.1 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.2 / License MIT / Скляр Роман S-LAB
  */
 
 #pragma once
@@ -176,7 +176,7 @@ enum AS5600BurnReports {
 class AS5600 {
   private:
     TwoWire *__wire; // Объект для использования методов I2C
-    uint8_t _pin_direction_ = 0; // Контакт микроконтроллера к которому подключен вывод DIR датчика
+    int8_t _pin_direction_ = -1; // Контакт микроконтроллера к которому подключен вывод DIR датчика
 
   protected:
     void AS_SendFirstRegister(uint8_t _reg_addr); // Отправить адрес регистра
@@ -188,7 +188,7 @@ class AS5600 {
 	
   public:
     AS5600(TwoWire *twi); // Конструктор с использованием только интерфейса I2C
-    AS5600(TwoWire *twi, uint8_t _pin_dir, AS5600DirectionPolarity _def_polar_dir = AS5600_DIRECTION_POLARITY_CLOCKWISE); // Конструктор с использованием интерфейса I2C, контакта DIR, направлением вращения
+    AS5600(TwoWire *twi, int8_t _pin_dir, AS5600DirectionPolarity _def_polar_dir = AS5600_DIRECTION_POLARITY_CLOCKWISE); // Конструктор с использованием интерфейса I2C, контакта DIR, направлением вращения
 
     void begin(void); // Вызов Wire.begin()
     void setClock(void); // Настройка частоты на 400кГц
@@ -314,6 +314,8 @@ class AS5600 {
     
     /* Output Registers */
     word getRawAngle(void); // Получить угол в чистом виде. 0 - 4095
+	float getDegreesAngle(void); // Получить угол в градусах. 0.00 - 360.00
+	float getRadiansAngle(void); // Получить угол в радианахю 0.00 - 6.29
     
     word getScaledAngle(void); // Получить масштабированный угол с учетом ZPOS, MPOS или MANG. 0 - 4095
 	
