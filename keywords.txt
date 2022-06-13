@@ -32,14 +32,20 @@ getBurnPositionsCount	KEYWORD2
 getZeroPosition	KEYWORD2
 setZeroPosition	KEYWORD2
 setZeroPositionVerify	KEYWORD2
+setZeroPositionViaRawAngle	KEYWORD2
+setZeroPositionViaRawAngleVerify	KEYWORD2
 
 getMaxPosition	KEYWORD2
 setMaxPosition	KEYWORD2
 setMaxPositionVerify	KEYWORD2
+setMaxPositionViaRawAngle	KEYWORD2
+setMaxPositionViaRawAngleVerify	KEYWORD2
 
 getMaxAngle	KEYWORD2
 setMaxAngle	KEYWORD2
 setMaxAngleVerify	KEYWORD2
+setMaxAngleViaRawAngle	KEYWORD2
+setMaxAngleViaRawAngleVerify	KEYWORD2
 
 getRawConfigurationValue	KEYWORD2
 setRawConfigurationValue	KEYWORD2
@@ -159,7 +165,9 @@ burnMaxAngleAndConfigurationValue	KEYWORD2
 #######################################
 
 AS5600_I2C_CLOCK	LITERAL1
-AS5600_I2C_ADDRESS	LITERAL1
+AS5600_I2C_CLOCK_100KHZ	LITERAL1
+AS5600_I2C_CLOCK_400KHZ	LITERAL1
+AS5600_I2C_CLOCK_1MHZ	LITERAL1
 
 STM32_AS5600_DEF_PIN	LITERAL1
 ESP32_AS5600_DEF_PIN	LITERAL1

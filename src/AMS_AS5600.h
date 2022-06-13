@@ -13,7 +13,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.2 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.3 / License MIT / Скляр Роман S-LAB
  */
 
 #pragma once
@@ -21,8 +21,10 @@
 #include "Wire.h"
 
 /*=== Настройки шины I2C датчика ===*/
-#define AS5600_I2C_CLOCK   400000UL
-#define AS5600_I2C_ADDRESS 0x36
+#define AS5600_I2C_CLOCK_100KHZ 100000UL
+#define AS5600_I2C_CLOCK_400KHZ 400000UL
+#define AS5600_I2C_CLOCK_1MHZ   1000000UL
+#define AS5600_I2C_ADDRESS      0x36
 
 /*=== Выводы на разных платах (зависит от ядра) ===*/
 #define STM32_AS5600_DEF_PIN   PC13
@@ -191,12 +193,12 @@ class AS5600 {
     AS5600(TwoWire *twi, int8_t _pin_dir, AS5600DirectionPolarity _def_polar_dir = AS5600_DIRECTION_POLARITY_CLOCKWISE); // Конструктор с использованием интерфейса I2C, контакта DIR, направлением вращения
 
     void begin(void); // Вызов Wire.begin()
-    void setClock(void); // Настройка частоты на 400кГц
+    void setClock(uint32_t freq_hz = AS5600_I2C_CLOCK_400KHZ); // Настройка частоты на 100кГц, 400кГц, 1МГц, или пользовательское значение (по умолчанию 400кГц)
     void end(void); // Вызов Wire.end()
 	
     void loadSavedValues(void); // Метод производителя для загрузки значений из памяти в регистры ZPOS, MPOS, MANG, CONF
 	
-    bool isConnected(void); // Проверка по стандартному алгоритму поиска устройств на линии I2C
+    bool isConnected(void); // Проверка по стандартному алгоритму поиска устройств на шине I2C
 	
     bool setDirection(AS5600DirectionPolarity _direction_polarity); // Установить положительное направление вращения (по/против часовой стрелки)
     bool reverseDirection(void); // Изменить положительное направление вращения на противоположное
@@ -208,14 +210,20 @@ class AS5600 {
     word getZeroPosition(void); // Получить значение начального положения (начальный угол). 0 - 4095
     void setZeroPosition(word _zero_position); // Установить новое начальное положение ZPOS
     bool setZeroPositionVerify(word _zero_position); // Тоже самое, но с подтверждением
+	void setZeroPositionViaRawAngle(void); // Установить новое начальное положение ZPOS используя нынешнее положение магнита (getRawAngle)
+	bool setZeroPositionViaRawAngleVerify(void); // Тоже самое, но с подтверждением
 	
     word getMaxPosition(void); // Получить значение конечного положения (конечный угол). 0 - 4095
-    void setMaxPosition(word _max_position); // Установить новое конечное положение
+    void setMaxPosition(word _max_position); // Установить новое конечное положение MPOS
     bool setMaxPositionVerify(word _max_position); // Тоже самое, но с подтверждением
+	void setMaxPositionViaRawAngle(void); // Установить новое начальное положение MPOS используя нынешнее положение магнита (getRawAngle)
+	bool setMaxPositionViaRawAngleVerify(void); // Тоже самое, но с подтверждением
 	
-    word getMaxAngle(void); // Получить значение максимально угла . 0 - 4095
-    void setMaxAngle(word _max_angle); // Установить новое значение максимального угла 
+    word getMaxAngle(void); // Получить значение максимально угла. 0 - 4095
+    void setMaxAngle(word _max_angle); // Установить новое значение максимального угла MANG
     bool setMaxAngleVerify(word _max_angle); // Тоже самое, но с подтверждением
+	void setMaxAngleViaRawAngle(void); // Установить новое начальное положение MANG используя нынешнее положение магнита (getRawAngle)
+	bool setMaxAngleViaRawAngleVerify(void); // Тоже самое, но с подтверждением
 	
     word getRawConfigurationValue(void); // Получить "сырые" значения регистра конфигураций CONF. 0 - 4095
     void setRawConfigurationValue(word _confuration_value); // Установить новые "сырые" значения регистра конфигураций CONF
@@ -315,7 +323,7 @@ class AS5600 {
     /* Output Registers */
     word getRawAngle(void); // Получить угол в чистом виде. 0 - 4095
 	float getDegreesAngle(void); // Получить угол в градусах. 0.00 - 360.00
-	float getRadiansAngle(void); // Получить угол в радианахю 0.00 - 6.29
+	float getRadiansAngle(void); // Получить угол в радианах 0.00 - 6.29
     
     word getScaledAngle(void); // Получить масштабированный угол с учетом ZPOS, MPOS или MANG. 0 - 4095
 	
@@ -325,7 +333,7 @@ class AS5600 {
     bool isMagnetTooWeak(void); // Определить очень слабый магнит ML
     bool isMagnetTooStrong(void); // Определить очень сильный магнит MH
 	
-    byte getAutomaticGainControl(void); // Получить значение автоусиления. При 5В 0 - 255, при 3.3В 0 - 128
+    byte getAutomaticGainControl(void); // Получить значение автоусиления. При VCC = 5В -> 0 - 255, при VCC = 3.3В -> 0 - 128
 	
     word getMagnitude(void); // Получить значение магнитуды. 0 - 4095
     

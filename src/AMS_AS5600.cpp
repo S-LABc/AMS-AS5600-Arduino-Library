@@ -13,7 +13,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.2 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.3 / License MIT / Скляр Роман S-LAB
  */
 
 #include "AMS_AS5600.h"
@@ -139,11 +139,10 @@ void AS5600::begin(void) {
 }
 /* 
  * @brief: настройка частоты шины I2C
- * @note: использовать, если частота шины меняется из-за разных устройств
+ * @note: использовать, если частота шины меняется из-за разных устройств. по умолчанию 400кГц
  */
-void AS5600::setClock(void) {
-  // Настройка частоты 400кГц
-  __wire->setClock(AS5600_I2C_CLOCK);
+void AS5600::setClock(uint32_t freq_hz) {
+  __wire->setClock(freq_hz);
 }
 /* 
  * @brief: отключение шины I2C
@@ -281,6 +280,26 @@ bool AS5600::setZeroPositionVerify(word _zero_position) {
   return (AS5600::getZeroPosition() == _zero_position) ? AS5600_DEFAULT_REPORT_OK : AS5600_DEFAULT_REPORT_ERROR;
 }
 /* 
+ * @brief: установить новое начальное положение в регистр ZPOS(11:0) используя нынешнее положение магнита
+ * @note: получает и отправляет значение полученное от метода getRawAngle
+ */
+void AS5600::setZeroPositionViaRawAngle(void) {
+  word raw_angle = AS5600::getRawAngle();
+  AS5600::AS_WriteTwoBytes(AS5600_CONFIG_REG_ZPOS_L, AS5600_CONFIG_REG_ZPOS_H, raw_angle);
+}
+/* 
+ * @brief: установить новое начальное положение в регистр ZPOS(11:0) используя нынешнее положение магнита с подтверждением
+ * @note: получает и отправляет значение полученное от метода getRawAngle
+ * @return:
+ *  AS5600_DEFAULT_REPORT_ERROR - новое значение не установлено
+ *  AS5600_DEFAULT_REPORT_OK- новое значение успешно установлено
+ */
+bool AS5600::setZeroPositionViaRawAngleVerify(void) {
+  word raw_angle = AS5600::getRawAngle();
+  AS5600::AS_WriteTwoBytes(AS5600_CONFIG_REG_ZPOS_L, AS5600_CONFIG_REG_ZPOS_H, raw_angle);
+  return (AS5600::getZeroPosition() == raw_angle) ? AS5600_DEFAULT_REPORT_OK : AS5600_DEFAULT_REPORT_ERROR;
+}
+/* 
  * brief: получить значение конечного положения из регистра MPOS(11:0) (конечный угол)
  * @return:
  *  0 - 4095
@@ -290,7 +309,7 @@ word AS5600::getMaxPosition(void) {
   return AS5600::AS_RequestPairRegisters();
 }
 /* 
- * @brief: установить новое начальное положение в регистр MPOS(11:0)
+ * @brief: установить новое конечное положение в регистр MPOS(11:0)
  * @param _max_position:
  *  0 - 4095
  */
@@ -298,7 +317,7 @@ void AS5600::setMaxPosition(word _max_position) {
   AS5600::AS_WriteTwoBytes(AS5600_CONFIG_REG_MPOS_L, AS5600_CONFIG_REG_MPOS_H, _max_position);
 }
 /* 
- * @brief: установить новое начальное положение в регистр MPOS(11:0) с подтверждением
+ * @brief: установить новое конечное положение в регистр MPOS(11:0) с подтверждением
  * @param _max_position:
  *  0 - 4095
  * @return:
@@ -308,6 +327,26 @@ void AS5600::setMaxPosition(word _max_position) {
 bool AS5600::setMaxPositionVerify(word _max_position) {
   AS5600::setMaxPosition(_max_position);
   return (AS5600::getMaxPosition() == _max_position) ? AS5600_DEFAULT_REPORT_OK : AS5600_DEFAULT_REPORT_ERROR;
+}
+/* 
+ * @brief: установить новое конечное положение в регистр MPOS(11:0) используя нынешнее положение магнита
+ * @note: получает и отправляет значение полученное от метода getRawAngle
+ */
+void AS5600::setMaxPositionViaRawAngle(void) {
+  word raw_angle = AS5600::getRawAngle();
+  AS5600::AS_WriteTwoBytes(AS5600_CONFIG_REG_MPOS_L, AS5600_CONFIG_REG_MPOS_H, raw_angle);
+}
+/* 
+ * @brief: установить новое конечное положение в регистр MPOS(11:0) используя нынешнее положение магнита с подтверждением
+ * @note: получает и отправляет значение полученное от метода getRawAngle
+ * @return:
+ *  AS5600_DEFAULT_REPORT_ERROR - новое значение не установлено
+ *  AS5600_DEFAULT_REPORT_OK- новое значение успешно установлено
+ */
+bool AS5600::setMaxPositionViaRawAngleVerify(void) {
+  word raw_angle = AS5600::getRawAngle();
+  AS5600::AS_WriteTwoBytes(AS5600_CONFIG_REG_MPOS_L, AS5600_CONFIG_REG_MPOS_H, raw_angle);
+  return (AS5600::getMaxPosition() == raw_angle) ? AS5600_DEFAULT_REPORT_OK : AS5600_DEFAULT_REPORT_ERROR;
 }
 /* 
  * @brief: получить значение максимального угла из регистра MANG(11:0)
@@ -337,6 +376,26 @@ void AS5600::setMaxAngle(word _max_angle) {
 bool AS5600::setMaxAngleVerify(word _max_angle) {
   AS5600::setMaxAngle(_max_angle);
   return (AS5600::getMaxAngle() == _max_angle) ? AS5600_DEFAULT_REPORT_OK : AS5600_DEFAULT_REPORT_ERROR;
+}
+/* 
+ * @brief: установить новое значение максимального угла в регистр MANG(11:0) используя нынешнее положение магнита
+ * @note: получает и отправляет значение полученное от метода getRawAngle
+ */
+void AS5600::setMaxAngleViaRawAngle(void) {
+  word raw_angle = AS5600::getRawAngle();
+  AS5600::AS_WriteTwoBytes(AS5600_CONFIG_REG_MANG_L, AS5600_CONFIG_REG_MANG_H, raw_angle);
+}
+/* 
+ * @brief: установить новое значение максимального угла в регистр MANG(11:0) используя нынешнее положение магнита с подтверждением
+ * @note: получает и отправляет значение полученное от метода getRawAngle
+ * @return:
+ *  AS5600_DEFAULT_REPORT_ERROR - новое значение не установлено
+ *  AS5600_DEFAULT_REPORT_OK- новое значение успешно установлено
+ */
+bool AS5600::setMaxAngleViaRawAngleVerify(void) {
+  word raw_angle = AS5600::getRawAngle();
+  AS5600::AS_WriteTwoBytes(AS5600_CONFIG_REG_MANG_L, AS5600_CONFIG_REG_MANG_H, raw_angle);
+  return (AS5600::getMaxAngle() == raw_angle) ? AS5600_DEFAULT_REPORT_OK : AS5600_DEFAULT_REPORT_ERROR;
 }
 /* 
  * @brief: получить значение конфигураций из регистра CONF(13:0)
