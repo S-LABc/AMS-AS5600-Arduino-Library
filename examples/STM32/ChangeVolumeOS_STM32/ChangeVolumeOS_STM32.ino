@@ -19,8 +19,8 @@
  * VCC   -> +3V3
  * GND   -> GND
  * DIR   -> GND
- * SDA   -> SDA
- * SCL   -> SCL
+ * SDA   -> SDA (PB7)
+ * SCL   -> SCL (PB6)
  * 
  * Проверка:
  * 1. Подключить датчик согласно распиновке
@@ -34,14 +34,18 @@
  * Зависимости:
  * https://github.com/rogerclarkmelbourne/Arduino_STM32
  * https://github.com/arpruss/USBComposite_stm32f1
+ *
+ * Больше информации в WiKi:
+ * https://github.com/S-LABc/AMS-AS5600-Arduino-Library/wiki
  * 
  * Контакты:
  ** YouTube - https://www.youtube.com/channel/UCbkE52YKRphgkvQtdwzQbZQ
  ** Telegram - https://www.t.me/slabyt
+ ** Канал в Telegram - https://www.t.me/t_slab
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.0 / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.1 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеки
@@ -49,11 +53,12 @@
 #include <USBComposite.h>
 
 // Коды кнопок изменения громкости
+// Больше кодов клавиш можно найти тут https://github.com/NicoHood/HID/blob/master/src/HID-APIs/ConsumerAPI.h#L30
 #define VOLUME_UP   0xE9
 #define VOLUME_DOWN 0xEA
 
 // Чувствительность на таймере
-#define JOG_SENS 10 //миллисекунды
+#define JOG_SENS 15 //миллисекунды
 
 // Хранят значения для определения действия
 uint16_t last_value = 0;
@@ -77,6 +82,11 @@ HIDConsumer MmultimediaKeyboard(HID);
 AS5600 Sensor(&Wire);
 
 void setup() {
+  // Устанавливаем общие сведения о USB устройстве
+  USBComposite.setManufacturerString("S-LAB"); // Производитель устройства
+  USBComposite.setProductString("USB Multimedia Keyboard"); // Название устройства
+  USBComposite.setSerialString("001"); // Серийный номер устройства
+  
   // Запукаем клавиатуру
   HID.begin(reportDescription, sizeof(reportDescription));
 
@@ -84,11 +94,13 @@ void setup() {
   Sensor.begin();
   // Настраиваем шину I2C на 400кГц
   Sensor.setClock();
+  //Можно на друие частоты, но работает не на всех микроконтроллерах
+  //Sensor.setClock(AS5600_I2C_CLOCK_100KHZ); // 100кГц
+  //Sensor.setClock(AS5600_I2C_CLOCK_1MHZ); // 1МГц
+  //Sensor.setClock(725000); // Пользовательское значение 725кГц
 
   // Ждем успешной инициализации USB
-  while(!USBComposite) {
-    delay(1); 
-  }
+  while(!USBComposite);
 }
 
 void loop() {
@@ -100,16 +112,18 @@ void loop() {
 }
 // Обработка показаний датчика и управление громкостью
 void sensorEvent() {
-  now_value = Sensor.getRawAngle(); // Получаем нынешнее значение (от 0 до 4095)
-  delta_value = now_value - last_value; // Находим разность текущего и прошлого значений
+  if(Sensor.isConnected()) {
+    now_value = Sensor.getRawAngle(); // Получаем нынешнее значение (от 0 до 4095)
+    delta_value = now_value - last_value; // Находим разность текущего и прошлого значений
   
-  if(delta_value > 2) { // Если был поворот с разностью больше 2
-    MmultimediaKeyboard.press(VOLUME_UP); // Увеличиваем громкость
-    MmultimediaKeyboard.release(); // Отпускаем нажатую клавишу
-  }else if(delta_value < -2) { // Если был поворот с разностью меньше -2
-    MmultimediaKeyboard.press(VOLUME_DOWN); // Уменьшаем громкость
-    MmultimediaKeyboard.release(); // Отпускаем нажатую клавишу
-  }
+    if(delta_value > 2) { // Если был поворот с разностью больше 2
+      MmultimediaKeyboard.press(VOLUME_UP); // Увеличиваем громкость
+      MmultimediaKeyboard.release(); // Отпускаем нажатую клавишу
+    }else if(delta_value < -2) { // Если был поворот с разностью меньше -2
+      MmultimediaKeyboard.press(VOLUME_DOWN); // Уменьшаем громкость
+      MmultimediaKeyboard.release(); // Отпускаем нажатую клавишу
+    }
 
-  last_value = now_value; // Сохраняем нынешнее значение как прошлое
+    last_value = now_value; // Сохраняем нынешнее значение как прошлое
+  }
 }

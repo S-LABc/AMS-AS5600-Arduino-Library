@@ -34,14 +34,18 @@
  * 
  * Зависимости:
  * https://github.com/NicoHood/HID
+ *
+ * Больше информации в WiKi:
+ * https://github.com/S-LABc/AMS-AS5600-Arduino-Library/wiki
  * 
  * Контакты:
  ** YouTube - https://www.youtube.com/channel/UCbkE52YKRphgkvQtdwzQbZQ
  ** Telegram - https://www.t.me/slabyt
+ ** Канал в Telegram - https://www.t.me/t_slab
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.0 / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.1 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеки
@@ -73,6 +77,10 @@ void setup() {
   Sensor.begin();
   // Настраиваем шину I2C на 400кГц
   Sensor.setClock();
+  //Можно на друие частоты, но работает не на всех микроконтроллерах
+  //Sensor.setClock(AS5600_I2C_CLOCK_100KHZ); // 100кГц
+  //Sensor.setClock(AS5600_I2C_CLOCK_1MHZ); // 1МГц
+  //Sensor.setClock(725000); // Пользовательское значение 725кГц
 }
 
 void loop() {
@@ -84,14 +92,16 @@ void loop() {
 }
 // Обработка показаний датчика и управление громкостью
 void sensorEvent() {
-  now_value = Sensor.getRawAngle(); // Получаем нынешнее значение (от 0 до 4095)
-  delta_value = now_value - last_value; // Находим разность текущего и прошлого значений
+  if(Sensor.isConnected()) {
+    now_value = Sensor.getRawAngle(); // Получаем нынешнее значение (от 0 до 4095)
+    delta_value = now_value - last_value; // Находим разность текущего и прошлого значений
   
-  if(delta_value > 2) { // Если был поворот с разностью больше 2
-    Consumer.write(MEDIA_VOLUME_UP); // Увеличиваем громкость
-  }else if(delta_value < -2) { // Если был поворот с разностью меньше -2
-    Consumer.write(MEDIA_VOLUME_DOWN); // Уменьшаем громкость
+    if(delta_value > 2) { // Если был поворот с разностью больше 2
+      Consumer.write(MEDIA_VOLUME_UP); // Увеличиваем громкость
+    }else if(delta_value < -2) { // Если был поворот с разностью меньше -2
+      Consumer.write(MEDIA_VOLUME_DOWN); // Уменьшаем громкость
+    }
+  
+    last_value = now_value; // Сохраняем нынешнее значение как прошлое
   }
-  
-  last_value = now_value; // Сохраняем нынешнее значение как прошлое
 }
