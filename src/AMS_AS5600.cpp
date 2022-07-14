@@ -6,10 +6,14 @@
  * Документация к датчику:
  ** https://ams.com/documents/20143/36005/AS5600_DS000365_5-00.pdf
  ** https://ams.com/en/as5600
+ *
+ * Больше информации в WiKi:
+ * https://github.com/S-LABc/AMS-AS5600-Arduino-Library/wiki
  * 
  * Контакты:
  ** YouTube - https://www.youtube.com/channel/UCbkE52YKRphgkvQtdwzQbZQ
  ** Telegram - https://www.t.me/slabyt
+ ** Канал в Telegram - https://www.t.me/t_slab
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
@@ -29,7 +33,7 @@ AS5600::AS5600(TwoWire *twi) : __wire(twi ? twi : &Wire) {
 /*
  * @brief: использовать интерфейс I2C, вывод МК для контакта DIR датчика, задать положительно направление вращения
  * @param *twi: доступ к методам объекта Wire
- * @para pin_dir: вывод микроконтроллер к которому подключен контакт DIR датчика
+ * @para pin_dir: контакт микроконтроллера к которому подключен контакт DIR датчика
  * @param def_polar_dir: положительно направление вращения магнита (по/против часовой стрелки)
  */
 AS5600::AS5600(TwoWire *twi, int8_t _pin_dir, AS5600DirectionPolarity _def_polar_dir) : __wire(twi ? twi : &Wire) {
@@ -37,11 +41,6 @@ AS5600::AS5600(TwoWire *twi, int8_t _pin_dir, AS5600DirectionPolarity _def_polar
   pinMode(_pin_direction_, OUTPUT);
   digitalWrite(_pin_direction_, _def_polar_dir);
 }
-
-// ########## PRIVATE ##########
-/*
- * 
- */
  
 // ########## PROTECTED ##########
 /* 
@@ -193,6 +192,86 @@ bool AS5600::isConnected(void) {
   // Начать передачу по адресу 0x36
   __wire->beginTransmission(AS5600_I2C_ADDRESS);
   return (!__wire->endTransmission(AS5600_I2C_ADDRESS)) ? AS5600_DEFAULT_REPORT_OK : AS5600_DEFAULT_REPORT_ERROR;
+}
+
+/*
+ * @brief: установить новое минимальное значение срабатывания кнопки
+ * @param _btn_min_agc: нижняя граница срабатывания кнопки
+ */
+void AS5600::setButtonMinAGC(byte _btn_min_agc) {
+  _virtual_button.minimum_agc = _btn_min_agc;
+}
+/*
+ * @brief: получить минимальное значение срабатывания кнопки
+ */
+byte AS5600::getButtonMinAGC(void) {
+  return _virtual_button.minimum_agc;
+}
+/*
+ * @brief: установить новое максимальное значение срабатывания кнопки
+ * @param _btn_max_agc: верхняя граница срабатывания кнопки
+ */
+void AS5600::setButtonMaxAGC(byte _btn_max_agc) {
+  _virtual_button.maximum_agc = _btn_max_agc;
+}
+/*
+ * @brief: получить максимальное значение срабатывания кнопки
+ */
+byte AS5600::getButtonMaxAGC(void) {
+  return _virtual_button.maximum_agc;
+}
+/*
+ * @brief: установить новое значение отклонения срабатывания кнопки
+ * @param _btn_div: значение отклонения
+ */
+void AS5600::setButtonDeviation(byte _btn_div) {
+  _virtual_button.deviation = _btn_div;
+}
+/*
+ * @brief: получить значение отклонения срабатывания кнопки
+ */
+byte AS5600::getButtonDeviation(void) {
+  return _virtual_button.deviation;
+}
+/*
+ * @brief: узнать нажата ли виртуальная кнопка
+ * @note: метод построен на обработке значения от метода getAutomaticGainControl
+ * @return:
+ *  AS5600_DEFAULT_REPORT_ERROR - кнопка не нажата
+ *  AS5600_DEFAULT_REPORT_OK - кнопка нажата
+ */
+bool AS5600::isButtonPressed(void) {
+  byte agc_value = AS5600::getAutomaticGainControl();
+  if(!_virtual_button.falg_button_state && (agc_value < (_virtual_button.minimum_agc + _virtual_button.deviation))) {
+    _virtual_button.falg_button_state = true;
+	return AS5600_DEFAULT_REPORT_OK;
+  }else {
+	return AS5600_DEFAULT_REPORT_ERROR;
+  }
+}
+/*
+ * @brief: узнать отпущена ли виртуальная кнопка
+ * @note: метод построен на обработке значения от метода getAutomaticGainControl
+ * @return:
+ *  AS5600_DEFAULT_REPORT_ERROR - кнопка не отпущена
+ *  AS5600_DEFAULT_REPORT_OK - кнопка отпущена
+ */
+bool AS5600::isButtonReleased(void) {
+  byte agc_value = AS5600::getAutomaticGainControl();
+  if(_virtual_button.falg_button_state && (agc_value > (_virtual_button.maximum_agc - _virtual_button.deviation))) {
+    _virtual_button.falg_button_state = false;
+	return AS5600_DEFAULT_REPORT_OK;
+  }else {
+	return AS5600_DEFAULT_REPORT_ERROR;
+  }
+}
+/*
+ * @brief: назначить контакт микроконтроллера для управления контактом DIR датчика
+ * @param _pin_dir: контакт микроконтроллера к которому подключен контакт DIR датчика
+ */
+void AS5600::attachDirectionPin(byte _pin_dir) {
+  _pin_direction_ = _pin_dir;
+  pinMode(_pin_direction_, OUTPUT);
 }
 /* 
  * @brief: установить положительное направление вращения по часовой стрелке или против часовой стрелки

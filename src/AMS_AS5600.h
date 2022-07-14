@@ -6,10 +6,14 @@
  * Документация к датчику:
  ** https://ams.com/documents/20143/36005/AS5600_DS000365_5-00.pdf
  ** https://ams.com/en/as5600
+ *
+ * Больше информации в WiKi:
+ * https://github.com/S-LABc/AMS-AS5600-Arduino-Library/wiki
  * 
  * Контакты:
  ** YouTube - https://www.youtube.com/channel/UCbkE52YKRphgkvQtdwzQbZQ
  ** Telegram - https://www.t.me/slabyt
+ ** Канал в Telegram - https://www.t.me/t_slab
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
@@ -173,15 +177,24 @@ enum AS5600BurnReports {
   AS5600_BURN_REPROT_ATTEMPTS_ENDED,
   AS5600_BURN_REPROT_ANGLE_VALUE_TOO_SMALL,
 };
+// Хранит параметры виртуальной кнопки
+struct AS5600Button {
+  bool falg_button_state = false;
+  byte minimum_agc = 0;
+  byte maximum_agc = 0;
+  byte deviation = 0;
+};
 
 
 class AS5600 {
   private:
     TwoWire *__wire; // Объект для использования методов I2C
     int8_t _pin_direction_ = -1; // Контакт микроконтроллера к которому подключен вывод DIR датчика
+	AS5600Button _virtual_button; // Структура с параметрами виртуальной кнопки
 
   protected:
     void AS_SendFirstRegister(uint8_t _reg_addr); // Отправить адрес регистра
+	
     uint8_t AS_RequestSingleRegister(void); // Запрос значения регистра размером 1 байт
     uint16_t AS_RequestPairRegisters(void); // Запрос значения регистра размером 2 байта
 	
@@ -200,6 +213,20 @@ class AS5600 {
 	
     bool isConnected(void); // Проверка по стандартному алгоритму поиска устройств на шине I2C
 	
+	/* Виртуальная кнопка */
+	/** Настройки **/
+	void setButtonMinAGC(byte _btn_min_agc); // Установить новое минимальное значение срабатывания кнопки
+	byte getButtonMinAGC(void); // Получить минимальное значение срабатывания кнопки
+	void setButtonMaxAGC(byte _btn_max_agc); // Установить новое максимальное значение срабатывания кнопки
+	byte getButtonMaxAGC(void); // Получить максимальное значение срабатывания кнопки
+	void setButtonDeviation(byte _btn_div); // Установить новое значение отклонения срабатывания кнопки
+	byte getButtonDeviation(void); // Получить значение отклонения срабатывания кнопки
+	/** События **/
+	bool isButtonPressed(void); // Проверка виртуальной кнопки на состояние НАЖАТА
+	bool isButtonReleased(void); // Проверка виртуальной кнопки на состояние ОТПУЩЕНА
+	
+	/* Управление контактом DIR датчика */
+	void attachDirectionPin(byte _pin_dir); // Назначить контакт микроконтроллера для управления положительным направлением вращения
     bool setDirection(AS5600DirectionPolarity _direction_polarity); // Установить положительное направление вращения (по/против часовой стрелки)
     bool reverseDirection(void); // Изменить положительное направление вращения на противоположное
     bool getDirection(void); // Получить текущее положительное направление вращения
@@ -322,8 +349,8 @@ class AS5600 {
     
     /* Output Registers */
     word getRawAngle(void); // Получить угол в чистом виде. 0 - 4095
-	float getDegreesAngle(void); // Получить угол в градусах. 0.00 - 360.00
-	float getRadiansAngle(void); // Получить угол в радианах 0.00 - 6.29
+	float getDegreesAngle(void); // Получить угол в градусах. 0.00 - 360.00. Основан на значениях от getRawAngle
+	float getRadiansAngle(void); // Получить угол в радианах 0.00 - 6.29. Основан на значениях от getRawAngle
     
     word getScaledAngle(void); // Получить масштабированный угол с учетом ZPOS, MPOS или MANG. 0 - 4095
 	
