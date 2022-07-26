@@ -34,9 +34,6 @@
  * https://github.com/S-LABc/AS5600-Position-Sensor-UI
  * 
  * Контакты:
- ** YouTube - https://www.youtube.com/channel/UCbkE52YKRphgkvQtdwzQbZQ
- ** Telegram - https://www.t.me/slabyt
- ** Канал в Telegram - https://www.t.me/t_slab
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
