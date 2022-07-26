@@ -187,7 +187,7 @@ class AS5600 {
   private:
     TwoWire *__wire; // Объект для использования методов I2C
     int8_t _pin_direction_ = -1; // Контакт микроконтроллера к которому подключен вывод DIR датчика
-	AS5600Button _virtual_button; // Структура с параметрами виртуальной кнопки
+    AS5600Button _virtual_button; // Структура с параметрами виртуальной кнопки
 
   protected:
     void AS_SendFirstRegister(uint8_t _reg_addr); // Отправить адрес регистра
@@ -210,20 +210,20 @@ class AS5600 {
 	
     bool isConnected(void); // Проверка по стандартному алгоритму поиска устройств на шине I2C
 	
-	/* Виртуальная кнопка */
-	/** Настройки **/
-	void setButtonMinAGC(byte _btn_min_agc); // Установить новое минимальное значение срабатывания кнопки
-	byte getButtonMinAGC(void); // Получить минимальное значение срабатывания кнопки
-	void setButtonMaxAGC(byte _btn_max_agc); // Установить новое максимальное значение срабатывания кнопки
-	byte getButtonMaxAGC(void); // Получить максимальное значение срабатывания кнопки
-	void setButtonDeviation(byte _btn_div); // Установить новое значение отклонения срабатывания кнопки
-	byte getButtonDeviation(void); // Получить значение отклонения срабатывания кнопки
-	/** События **/
-	bool isButtonPressed(void); // Проверка виртуальной кнопки на состояние НАЖАТА
-	bool isButtonReleased(void); // Проверка виртуальной кнопки на состояние ОТПУЩЕНА
+    /* Виртуальная кнопка */
+    /** Настройки **/
+    void setButtonMinAGC(byte _btn_min_agc); // Установить новое минимальное значение срабатывания кнопки
+    byte getButtonMinAGC(void); // Получить минимальное значение срабатывания кнопки
+    void setButtonMaxAGC(byte _btn_max_agc); // Установить новое максимальное значение срабатывания кнопки
+    byte getButtonMaxAGC(void); // Получить максимальное значение срабатывания кнопки
+    void setButtonDeviation(byte _btn_div); // Установить новое значение отклонения срабатывания кнопки
+    byte getButtonDeviation(void); // Получить значение отклонения срабатывания кнопки
+    /** События **/
+    bool isButtonPressed(void); // Проверка виртуальной кнопки на состояние НАЖАТА
+    bool isButtonReleased(void); // Проверка виртуальной кнопки на состояние ОТПУЩЕНА
 	
-	/* Управление контактом DIR датчика */
-	void attachDirectionPin(byte _pin_dir); // Назначить контакт микроконтроллера для управления положительным направлением вращения
+    /* Управление контактом DIR датчика */
+    void attachDirectionPin(byte _pin_dir); // Назначить контакт микроконтроллера для управления положительным направлением вращения
     bool setDirection(AS5600DirectionPolarity _direction_polarity); // Установить положительное направление вращения (по/против часовой стрелки)
     bool reverseDirection(void); // Изменить положительное направление вращения на противоположное
     bool getDirection(void); // Получить текущее положительное направление вращения
@@ -234,20 +234,20 @@ class AS5600 {
     word getZeroPosition(void); // Получить значение начального положения (начальный угол). 0 - 4095
     void setZeroPosition(word _zero_position); // Установить новое начальное положение ZPOS
     bool setZeroPositionVerify(word _zero_position); // Тоже самое, но с подтверждением
-	void setZeroPositionViaRawAngle(void); // Установить новое начальное положение ZPOS используя нынешнее положение магнита (getRawAngle)
-	bool setZeroPositionViaRawAngleVerify(void); // Тоже самое, но с подтверждением
+    void setZeroPositionViaRawAngle(void); // Установить новое начальное положение ZPOS используя нынешнее положение магнита (getRawAngle)
+    bool setZeroPositionViaRawAngleVerify(void); // Тоже самое, но с подтверждением
 	
     word getMaxPosition(void); // Получить значение конечного положения (конечный угол). 0 - 4095
     void setMaxPosition(word _max_position); // Установить новое конечное положение MPOS
     bool setMaxPositionVerify(word _max_position); // Тоже самое, но с подтверждением
-	void setMaxPositionViaRawAngle(void); // Установить новое начальное положение MPOS используя нынешнее положение магнита (getRawAngle)
-	bool setMaxPositionViaRawAngleVerify(void); // Тоже самое, но с подтверждением
+    void setMaxPositionViaRawAngle(void); // Установить новое начальное положение MPOS используя нынешнее положение магнита (getRawAngle)
+    bool setMaxPositionViaRawAngleVerify(void); // Тоже самое, но с подтверждением
 	
     word getMaxAngle(void); // Получить значение максимально угла. 0 - 4095
     void setMaxAngle(word _max_angle); // Установить новое значение максимального угла MANG
     bool setMaxAngleVerify(word _max_angle); // Тоже самое, но с подтверждением
-	void setMaxAngleViaRawAngle(void); // Установить новое начальное положение MANG используя нынешнее положение магнита (getRawAngle)
-	bool setMaxAngleViaRawAngleVerify(void); // Тоже самое, но с подтверждением
+    void setMaxAngleViaRawAngle(void); // Установить новое начальное положение MANG используя нынешнее положение магнита (getRawAngle)
+    bool setMaxAngleViaRawAngleVerify(void); // Тоже самое, но с подтверждением
 	
     word getRawConfigurationValue(void); // Получить "сырые" значения регистра конфигураций CONF. 0 - 4095
     void setRawConfigurationValue(word _confuration_value); // Установить новые "сырые" значения регистра конфигураций CONF
@@ -346,8 +346,8 @@ class AS5600 {
     
     /* Output Registers */
     word getRawAngle(void); // Получить угол в чистом виде. 0 - 4095
-	float getDegreesAngle(void); // Получить угол в градусах. 0.00 - 360.00. Основан на значениях от getRawAngle
-	float getRadiansAngle(void); // Получить угол в радианах 0.00 - 6.29. Основан на значениях от getRawAngle
+    float getDegreesAngle(void); // Получить угол в градусах. 0.00 - 360.00. Основан на значениях от getRawAngle
+    float getRadiansAngle(void); // Получить угол в радианах 0.00 - 6.29. Основан на значениях от getRawAngle
     
     word getScaledAngle(void); // Получить масштабированный угол с учетом ZPOS, MPOS или MANG. 0 - 4095
 	
