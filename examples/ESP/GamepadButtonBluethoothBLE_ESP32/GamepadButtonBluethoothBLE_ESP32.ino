@@ -44,9 +44,6 @@
  * https://github.com/S-LABc/AMS-AS5600-Arduino-Library/wiki
  * 
  * Контакты:
- ** YouTube - https://www.youtube.com/channel/UCbkE52YKRphgkvQtdwzQbZQ
- ** Telegram - https://www.t.me/slabyt
- ** Канал в Telegram - https://www.t.me/t_slab
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
