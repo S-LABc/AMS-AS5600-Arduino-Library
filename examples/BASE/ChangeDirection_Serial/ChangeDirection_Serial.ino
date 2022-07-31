@@ -29,13 +29,10 @@
  * https://github.com/S-LABc/AMS-AS5600-Arduino-Library/wiki
  * 
  * Контакты:
- ** YouTube - https://www.youtube.com/channel/UCbkE52YKRphgkvQtdwzQbZQ
- ** Telegram - https://www.t.me/slabyt
- ** Канал в Telegram - https://www.t.me/t_slab
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.1 / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.2 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеку
@@ -74,7 +71,8 @@ void setup() {
   //Sensor.setClock(725000); // Пользовательское значение 725кГц
 
   /* setDirection() и reverseDirection() работают только 
-   * если указан контакт МК при создании объекта Sensor 
+   * если указан контакт МК.
+   * Можно указать через метод Sensor.attachDirectionPin(byte _pin_dir);
    */
   // Положительное направление против часовой стрелки
   //Sensor.setDirection(AS5600_DIRECTION_POLARITY_COUNTERCLOCKWISE);

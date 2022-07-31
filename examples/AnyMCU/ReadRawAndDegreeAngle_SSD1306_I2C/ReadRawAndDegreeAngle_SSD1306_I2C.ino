@@ -39,17 +39,13 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.1 / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.2 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеки
 #include <AMS_AS5600.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-
-// Раскомментировать, если используется второй аппаратный блок I2C у платы
-//TwoWire Wire2 (2, I2C_FAST_MODE);
-//#define Wire Wire2
 
 // Ширина и высота дисплея
 #define SCREEN_WIDTH 128
@@ -72,7 +68,7 @@ void setup() {
    * Adafruit_SSD1306 делает все это сама
    */
   
-  // Если с датчиком порядок, настраивам дисплей для показаний угла
+  // Настраивам дисплей для показаний угла
   displayInit();
 }
 

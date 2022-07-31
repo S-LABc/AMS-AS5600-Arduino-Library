@@ -42,7 +42,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.1 / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.2 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеки
@@ -58,10 +58,6 @@ uint16_t now_value = 0;
 int16_t delta_value = 0;
 // Хранит время для регулировки чувствительности
 uint32_t last_time = 0;
-
-// Раскомментировать, если используется второй аппаратный блок I2C у платы
-//TwoWire Wire2 (2, I2C_FAST_MODE);
-//#define Wire Wire2
 
 // Создаем объект Sensor с указанием ссылки на объект Wire
 AS5600 Sensor(&Wire);

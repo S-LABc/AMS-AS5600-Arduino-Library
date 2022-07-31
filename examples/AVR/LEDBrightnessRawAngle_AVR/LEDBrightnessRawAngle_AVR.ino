@@ -33,15 +33,11 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.0 / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.1 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеку
 #include <AMS_AS5600.h>
-
-// Раскомментировать, если используется второй аппаратный блок I2C у платы
-//TwoWire Wire2 (2, I2C_FAST_MODE);
-//#define Wire Wire2
 
 // Контакт микроконтроллера с подключенным светодиодом
 // Подходит только с функцией PWM, например ~3, ~5, ~6, ~9, ~10, ~11
