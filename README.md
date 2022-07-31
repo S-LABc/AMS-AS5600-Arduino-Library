@@ -1,5 +1,5 @@
 # AMS-AS5600-Arduino-Library ✨
-<p align="center"><img src="/images/as5600_aliexpress.jpg" width="30%"><img src="/images/assembly_case_stl.jpg" width="30%"></p>
+<p align="center"><img src="/images/as5600_aliexpress.jpg" width="39%"><img src="/images/assembly_case_stl.jpg" width="30%"></p>
 
 ## 📃 Общие сведения
 * Полная и удобная библиотека Arduino IDE для работы с магнитным датчиком положения AS5600.
