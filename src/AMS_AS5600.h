@@ -14,7 +14,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.3 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.4 / License MIT / Скляр Роман S-LAB
  */
 
 #pragma once
@@ -166,6 +166,7 @@ enum AS5600SpecialVerifyFlags {
 };
 // Ответы методов burnZeroAndMaxPositions, burnMaxAngleAndConfigurationValue
 enum AS5600BurnReports {
+  AS5600_BURN_REPROT_SENSOR_NOT_CONNECTED
   AS5600_BURN_REPROT_MAGNET_NOT_FOUND,
   AS5600_BURN_REPROT_WRITE_OK,
   AS5600_BURN_REPROT_WRITE_WRONG,

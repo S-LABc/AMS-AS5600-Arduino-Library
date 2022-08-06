@@ -14,7 +14,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.3 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.4 / License MIT / Скляр Роман S-LAB
  */
 
 #include "AMS_AS5600.h"
@@ -1311,6 +1311,7 @@ word AS5600::getMagnitude(void) {
  *  AS5600_FLAG_SPECIAL_VERIFY_DISABLE
  *  AS5600_FLAG_SPECIAL_VERIFY_ENABLE
  * @return:
+ *  AS5600_BURN_REPROT_SENSOR_NOT_CONNECTED
  *  AS5600_BURN_REPROT_MAGNET_NOT_FOUND
  *  AS5600_BURN_REPROT_WRITE_OK
  *  AS5600_BURN_REPROT_WRITE_WRONG
@@ -1319,40 +1320,42 @@ word AS5600::getMagnitude(void) {
  *  AS5600_BURN_REPROT_ATTEMPTS_ENDED
  */
 AS5600BurnReports AS5600::burnZeroAndMaxPositions(AS5600SpecialVerifyFlags _use_special_verify) {
-  AS5600BurnReports result = AS5600_BURN_REPROT_MAGNET_NOT_FOUND;
-  // Собираем значениях из критически выжных регистров
-  byte burn_count = AS5600::getBurnPositionsCount();
-  word z_pos = AS5600::getZeroPosition();
-  word m_pos = AS5600::getMaxPosition();
-
-  if(burn_count < AS5600_MAX_VALUE_ZMCO) { // Если ресурс для записи не исчерпан
-    if(z_pos && m_pos) { // Если значения начального и максимального положения не 0
-      // Наличие магнита проверяем НА ПОСЛЕДНЕМ ШАГЕ, перед отправлением команды на запись!
-      if(AS5600::isMagnetDetected()) { // Если магнит обнаружен
-        AS5600::AS_WriteOneByte(AS5600_BURN_REG, AS5600_CMD_BURN_ANGLE); // Отправляем команду записи
-        if(_use_special_verify) { // Если используется проверка записанного
-          AS5600::loadSavedValues(); // Загружаем из памяти ранее записанные данные
-          // Получаем загруженные данные для сравнения
-          word z_pos_now = AS5600::getZeroPosition();
-          word m_pos_now = AS5600::getMaxPosition();
-          if(z_pos == z_pos_now && m_pos == m_pos_now) { // Если записываемые данные совпадают с сохраненными
-            result = AS5600_BURN_REPROT_WRITE_OK;
+  AS5600BurnReports result = AS5600_BURN_REPROT_SENSOR_NOT_CONNECTED;
+  
+  if(AS5600::isConnected()) { // Если датчик подключен
+    // Собираем значениях из критически выжных регистров
+    byte burn_count = AS5600::getBurnPositionsCount();
+    word z_pos = AS5600::getZeroPosition();
+    word m_pos = AS5600::getMaxPosition();
+    if(burn_count < AS5600_MAX_VALUE_ZMCO) { // Если ресурс для записи не исчерпан
+      if(z_pos && m_pos) { // Если значения начального и максимального положения не 0
+        // Наличие магнита проверяем НА ПОСЛЕДНЕМ ШАГЕ, перед отправлением команды на запись!
+        if(AS5600::isMagnetDetected()) { // Если магнит обнаружен
+          AS5600::AS_WriteOneByte(AS5600_BURN_REG, AS5600_CMD_BURN_ANGLE); // Отправляем команду записи
+          if(_use_special_verify) { // Если используется проверка записанного
+            AS5600::loadSavedValues(); // Загружаем из памяти ранее записанные данные
+            // Получаем загруженные данные для сравнения
+            word z_pos_now = AS5600::getZeroPosition();
+            word m_pos_now = AS5600::getMaxPosition();
+            if(z_pos == z_pos_now && m_pos == m_pos_now) { // Если записываемые данные совпадают с сохраненными
+              result = AS5600_BURN_REPROT_WRITE_OK;
+            }else {
+              result = AS5600_BURN_REPROT_WRITE_WRONG;
+            }
           }else {
-            result = AS5600_BURN_REPROT_WRITE_WRONG;
+            result = AS5600_BURN_REPROT_WRITE_OK_WITHOUT_VERIFY;
           }
         }else {
-          result = AS5600_BURN_REPROT_WRITE_OK_WITHOUT_VERIFY;
+          result = AS5600_BURN_REPROT_MAGNET_NOT_FOUND;
         }
       }else {
-        result = AS5600_BURN_REPROT_MAGNET_NOT_FOUND;
+        result = AS5600_BURN_REPROT_ZPOS_MPOS_NOT_SET;
       }
     }else {
-      result = AS5600_BURN_REPROT_ZPOS_MPOS_NOT_SET;
+      result = AS5600_BURN_REPROT_ATTEMPTS_ENDED;
     }
-  }else {
-    result = AS5600_BURN_REPROT_ATTEMPTS_ENDED;
   }
-  
+
   return result;
 }
 /* 
@@ -1363,6 +1366,7 @@ AS5600BurnReports AS5600::burnZeroAndMaxPositions(AS5600SpecialVerifyFlags _use_
  *  AS5600_FLAG_SPECIAL_VERIFY_DISABLE
  *  AS5600_FLAG_SPECIAL_VERIFY_ENABLE
  * @return:
+ *  AS5600_BURN_REPROT_SENSOR_NOT_CONNECTED
  *  AS5600_BURN_REPROT_MAGNET_NOT_FOUND
  *  AS5600_BURN_REPROT_WRITE_OK
  *  AS5600_BURN_REPROT_WRITE_WRONG
@@ -1371,38 +1375,40 @@ AS5600BurnReports AS5600::burnZeroAndMaxPositions(AS5600SpecialVerifyFlags _use_
  *  AS5600_BURN_REPROT_ATTEMPTS_ENDED
  */
 AS5600BurnReports AS5600::burnMaxAngleAndConfigurationValue(AS5600SpecialVerifyFlags _use_special_verify) {
-  AS5600BurnReports result = AS5600_BURN_REPROT_MAGNET_NOT_FOUND;
-  // Собираем значениях из критически выжных регистров
-  byte burn_count = AS5600::getBurnPositionsCount();
-  word m_ang = AS5600::getMaxAngle();
-  word conf = AS5600::getRawConfigurationValue();
+  AS5600BurnReports result = AS5600_BURN_REPROT_SENSOR_NOT_CONNECTED;
   
-  if(burn_count == 0) { // Если ресурс для записи не исчерпан
-    if(AS5600::getMaxAngle() >= AS5600_MIN_ANGLE_VALUE_DEC) { // Если значение угла подходит
-      // Наличие магнита проверяем НА ПОСЛЕДНЕМ ШАГЕ, перед отправлением команды на запись!
-      if(AS5600::isMagnetDetected()) { // Если магнит обнаружен
-        AS5600::AS_WriteOneByte(AS5600_BURN_REG, AS5600_CMD_BURN_SETTINGS); // Отправляем команду записи настроек
-        if(_use_special_verify) { // Если используется проверка записанного
-          AS5600::loadSavedValues(); // Загружаем из памяти ранее записанные данные
-          // Получаем загруженные данные для сравнения
-          word m_ang_now = AS5600::getMaxAngle();
-          word conf_now = AS5600::getRawConfigurationValue();
-          if(m_ang == m_ang_now && conf == conf_now) { // Если записываемые данные совпадают с сохраненными
-            result = AS5600_BURN_REPROT_WRITE_OK;
+  if(AS5600::isConnected()) { // Если датчик подключен
+    // Собираем значениях из критически выжных регистров
+    byte burn_count = AS5600::getBurnPositionsCount();
+    word m_ang = AS5600::getMaxAngle();
+    word conf = AS5600::getRawConfigurationValue();
+    if(burn_count == 0) { // Если ресурс для записи не исчерпан
+      if(AS5600::getMaxAngle() >= AS5600_MIN_ANGLE_VALUE_DEC) { // Если значение угла подходит
+        // Наличие магнита проверяем НА ПОСЛЕДНЕМ ШАГЕ, перед отправлением команды на запись!
+        if(AS5600::isMagnetDetected()) { // Если магнит обнаружен
+          AS5600::AS_WriteOneByte(AS5600_BURN_REG, AS5600_CMD_BURN_SETTINGS); // Отправляем команду записи настроек
+          if(_use_special_verify) { // Если используется проверка записанного
+            AS5600::loadSavedValues(); // Загружаем из памяти ранее записанные данные
+            // Получаем загруженные данные для сравнения
+            word m_ang_now = AS5600::getMaxAngle();
+            word conf_now = AS5600::getRawConfigurationValue();
+            if(m_ang == m_ang_now && conf == conf_now) { // Если записываемые данные совпадают с сохраненными
+              result = AS5600_BURN_REPROT_WRITE_OK;
+            }else {
+              result = AS5600_BURN_REPROT_WRITE_WRONG;
+            }
           }else {
-            result = AS5600_BURN_REPROT_WRITE_WRONG;
+            result = AS5600_BURN_REPROT_WRITE_OK_WITHOUT_VERIFY;
           }
         }else {
-          result = AS5600_BURN_REPROT_WRITE_OK_WITHOUT_VERIFY;
+          result = AS5600_BURN_REPROT_MAGNET_NOT_FOUND;
         }
       }else {
-        result = AS5600_BURN_REPROT_MAGNET_NOT_FOUND;
+        result = AS5600_BURN_REPROT_ANGLE_VALUE_TOO_SMALL;
       }
     }else {
-      result = AS5600_BURN_REPROT_ANGLE_VALUE_TOO_SMALL;
+      result = AS5600_BURN_REPROT_ATTEMPTS_ENDED;
     }
-  }else {
-    result = AS5600_BURN_REPROT_ATTEMPTS_ENDED;
   }
 
   return result;
