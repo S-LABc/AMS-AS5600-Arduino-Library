@@ -14,7 +14,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.4 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.5 / License MIT / Скляр Роман S-LAB
  */
 
 #include "AMS_AS5600.h"
@@ -133,6 +133,18 @@ void AS5600::AS_WriteTwoBytes(uint8_t _low_register, uint8_t _high_register, uin
 void AS5600::begin(void) {
   __wire->begin();
 }
+#if defined (ESP8266) || defined(ESP32)
+/* 
+ * @brief: вызов метода Wire.begin(SDA, SCL) с указанием выводов
+ * @param _sda_pin: пользовательский контакт SDA
+ * @param _scl_pin: пользовательский контакт SCL
+ * @note: использовать, если действие не было выполнено ранее.
+ *   Применимо для платформ на базе ESP8266 и ESP32
+ */
+void AS5600::begin(int8_t _sda_pin, int8_t _scl_pin) {
+  __wire->begin(_sda_pin, _scl_pin);
+}
+#endif
 /* 
  * @brief: настройка частоты шины I2C
  * @note: использовать, если частота шины меняется из-за разных устройств. по умолчанию 400кГц

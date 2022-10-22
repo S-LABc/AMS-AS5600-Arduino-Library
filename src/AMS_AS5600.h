@@ -14,7 +14,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.4 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.5 / License MIT / Скляр Роман S-LAB
  */
 
 #pragma once
@@ -27,7 +27,7 @@
 #define AS5600_I2C_CLOCK_1MHZ   1000000UL
 #define AS5600_I2C_ADDRESS      0x36
 
-/*=== Выводы на разных платах (зависит от ядра) ===*/
+/*=== Выводы для DIR на разных платах (зависит от ядра) ===*/
 #define STM32_AS5600_DEF_PIN   PC13
 #define ESP32_AS5600_DEF_PIN   4
 #define ARDUINO_AS5600_DEF_PIN 3
@@ -204,6 +204,9 @@ class AS5600 {
     AS5600(TwoWire *twi, int8_t _pin_dir, AS5600DirectionPolarity _def_polar_dir = AS5600_DIRECTION_POLARITY_CLOCKWISE); // Конструктор с использованием интерфейса I2C, контакта DIR, направлением вращения
 
     void begin(void); // Вызов Wire.begin()
+#if defined (ESP8266) || defined(ESP32)
+    void begin(int8_t _sda_pin, int8_t _scl_pin); // Вызов Wire.begin(SDA, SCL) с указанием выводов
+#endif
     void setClock(uint32_t freq_hz = AS5600_I2C_CLOCK_400KHZ); // Настройка частоты на 100кГц, 400кГц, 1МГц, или пользовательское значение (по умолчанию 400кГц)
     void end(void); // Вызов Wire.end()
 	
