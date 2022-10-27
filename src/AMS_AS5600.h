@@ -14,7 +14,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.5 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.6 / License MIT / Скляр Роман S-LAB
  */
 
 #pragma once
@@ -29,6 +29,7 @@
 
 /*=== Выводы для DIR на разных платах (зависит от ядра) ===*/
 #define STM32_AS5600_DEF_PIN   PC13
+#define ESP8266_AS5600_DEF_PIN 2
 #define ESP32_AS5600_DEF_PIN   4
 #define ARDUINO_AS5600_DEF_PIN 3
 
@@ -201,7 +202,6 @@ class AS5600 {
 	
   public:
     AS5600(TwoWire *twi); // Конструктор с использованием только интерфейса I2C
-    AS5600(TwoWire *twi, int8_t _pin_dir, AS5600DirectionPolarity _def_polar_dir = AS5600_DIRECTION_POLARITY_CLOCKWISE); // Конструктор с использованием интерфейса I2C, контакта DIR, направлением вращения
 
     void begin(void); // Вызов Wire.begin()
 #if defined (ESP8266) || defined(ESP32)

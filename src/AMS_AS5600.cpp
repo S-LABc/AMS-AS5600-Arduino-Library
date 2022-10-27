@@ -14,7 +14,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.5 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.6 / License MIT / Скляр Роман S-LAB
  */
 
 #include "AMS_AS5600.h"
@@ -26,17 +26,6 @@
  */
 AS5600::AS5600(TwoWire *twi) : __wire(twi ? twi : &Wire) {
   // Ничего
-}
-/*
- * @brief: использовать интерфейс I2C, вывод МК для контакта DIR датчика, задать положительно направление вращения
- * @param *twi: доступ к методам объекта Wire
- * @para pin_dir: контакт микроконтроллера к которому подключен контакт DIR датчика
- * @param def_polar_dir: положительно направление вращения магнита (по/против часовой стрелки)
- */
-AS5600::AS5600(TwoWire *twi, int8_t _pin_dir, AS5600DirectionPolarity _def_polar_dir) : __wire(twi ? twi : &Wire) {
-  _pin_direction_ = _pin_dir;
-  pinMode(_pin_direction_, OUTPUT);
-  digitalWrite(_pin_direction_, _def_polar_dir);
 }
  
 // ########## PROTECTED ##########
