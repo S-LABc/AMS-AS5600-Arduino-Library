@@ -7,7 +7,7 @@
  * AS5600   Board
  * VCC   -> +3V3
  * GND   -> GND
- * DIR   -> PIN_BOARD
+ * DIR   -> PIN_BOARD (указывается в setup)
  * SDA   -> SDA
  * SCL   -> SCL
  * 
@@ -32,34 +32,38 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.2 / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.3 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеку
 #include <AMS_AS5600.h>
 
-/* 
- * Создаем объект Sensor с указанием ссылки на объект Wire
- * и вывода микроконтроллера куда подключен контакт DIR датчика
- * при необходимости можно указать направление (по умолчнаю по часовой стрелке)
- * 
- * STM32_AS5600_DEF_PIN -> PC13
- * ESP32_AS5600_DEF_PIN -> 4
- * ARDUINO_AS5600_DEF_PIN -> 3
- */
-AS5600 Sensor(&Wire, STM32_AS5600_DEF_PIN);
-
-// Тоже самое с указанием положительного направления против часовой стрелки
-//AS5600 Sensor(&Wire, STM32_AS5600_DEF_PIN, AS5600_DIRECTION_POLARITY_COUNTERCLOCKWISE);
-
-// Тоже самое с указанием положительного направления по часовой стрелке
-//AS5600 Sensor(&Wire, STM32_AS5600_DEF_PIN, AS5600_DIRECTION_POLARITY_CLOCKWISE);
+// Создаем объект Sensor с указанием ссылки на объект Wire
+AS5600 Sensor(&Wire);
 
 // Для хранения времени
 uint32_t last_time = 0;
 
 void setup() {
   Serial.begin(115200);
+
+  /* 
+   * Указываем вывод к кторому подкючен контакт DIR датчика
+   * 
+   * STM32_AS5600_DEF_PIN -> PC13
+   * ESP8266_AS5600_DEF_PIN -> 2
+   * ESP32_AS5600_DEF_PIN -> 4
+   * ARDUINO_AS5600_DEF_PIN -> 3
+   * Или любой другой GPIO
+   */
+  Sensor.attachDirectionPin(STM32_AS5600_DEF_PIN);
+  /* 
+   * Указываем положительное направление вращения
+   * 
+   * AS5600_DIRECTION_POLARITY_CLOCKWISE -> По часовой стрелке
+   * AS5600_DIRECTION_POLARITY_COUNTERCLOCKWISE -> Против часвой стрелки
+   */
+  Sensor.setDirection(AS5600_DIRECTION_POLARITY_CLOCKWISE);
 
   // Запускаем соединение
   Sensor.begin();
@@ -70,14 +74,7 @@ void setup() {
   //Sensor.setClock(AS5600_I2C_CLOCK_1MHZ); // 1МГц
   //Sensor.setClock(725000); // Пользовательское значение 725кГц
 
-  /* setDirection() и reverseDirection() работают только 
-   * если указан контакт МК.
-   * Можно указать через метод Sensor.attachDirectionPin(byte _pin_dir);
-   */
-  // Положительное направление против часовой стрелки
-  //Sensor.setDirection(AS5600_DIRECTION_POLARITY_COUNTERCLOCKWISE);
-  // Положительное направление по часовой стрелке
-  //Sensor.setDirection(AS5600_DIRECTION_POLARITY_CLOCKWISE); 
+  
 }
 
 void loop() {
