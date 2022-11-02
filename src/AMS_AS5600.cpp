@@ -277,8 +277,8 @@ void AS5600::attachDirectionPin(byte _pin_dir) {
  * @brief: освободить назначенный контакт микроконтроллера для управления контактом DIR датчика
  */
 void AS5600::detachDirectionPin(void) {
-  _pin_direction_ = -1;
   pinMode(_pin_direction_, INPUT);
+  _pin_direction_ = -1;
 }
 /* 
  * @brief: установить положительное направление вращения по часовой стрелке или против часовой стрелки
