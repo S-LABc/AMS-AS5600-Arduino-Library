@@ -36,7 +36,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.1 / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.2 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеки
@@ -59,6 +59,8 @@ AS5600 Sensor(&Wire);
 void setup() {
   // Запускаем соединение с датчиком
   Sensor.begin();
+  // Можно указать выводы для I2C, SDA=33 SCL=32
+  //Sensor.begin(33, 32);
   // Настраиваем шину I2C на 400кГц
   Sensor.setClock();
   //Можно на друие частоты, но работает не на всех микроконтроллерах
@@ -83,11 +85,13 @@ void loop() {
 
 // Обработчик корневой директории
 void handle_main() {
-  server.send(200, "text/html", sendHTML(Sensor.getRawAngle())); // Отправляем угол на страницу и передаем ее в браузер
+  word raw = Sensor.getRawAngle();
+  float deg = Sensor.getDegreesAngle();
+  server.send(200, "text/html", sendHTML(raw, deg)); // Отправляем угол на страницу и передаем ее в браузер
 }
 
 // Веб страница
-String sendHTML(uint16_t _raw_ang){
+String sendHTML(word _raw_ang, float _deg_ang){
   String html = "<!DOCTYPE html> <html>\n";
   html +="<meta http-equiv=\"Content-type\" content=\"text/html; charset=utf-8\"><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">\n";
   html +="<title>AS5600 Web UI</title>\n";
@@ -103,8 +107,7 @@ String sendHTML(uint16_t _raw_ang){
   html +="<h2>AMS AS5600</h2>\n";
   html +="<div>Обновляйте страницу, меняя положение магнита</div>\n";
   html +="<p>АЦП: " + String(_raw_ang) + "</p>";
-  html +="<p>Угол: " + String(_raw_ang * 0.08789) + "</p>"; // 360/4096=0,087890625, 5 знаков после точки для АЦП 12 бит достаточно
-  // Вместо _raw_ang*0.08789 можно так Sensor.getDegreesAngle()
+  html +="<p>Угол: " + String(_deg_ang) + "</p>";
   html +="<a class=\"button btn\" href=\"/\">Обновить</a>\n";
   html +="</body>\n";
   html +="</html>\n";
