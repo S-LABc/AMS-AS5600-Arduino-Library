@@ -34,7 +34,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.0 / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.1 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеку
@@ -58,6 +58,8 @@ void setup() {
   // Подключаем ШИМ на контакт со светодиодом
   ledcAttachPin(LED_PIN, LED_CHANNEL);
 
+  // Можно указать выводы для I2C, SDA=33 SCL=32
+  //Sensor.begin(33, 32);
   // Запускаем соединение
   Sensor.begin();
   // Настраиваем шину I2C на 400кГц
