@@ -14,7 +14,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.6 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.7 / License MIT / Скляр Роман S-LAB
  */
 
 #include "AMS_AS5600.h"
@@ -22,9 +22,9 @@
 // ########## CONSTRUCTOR ##########
 /*
  * @brief: использовать только интерфейс I2C
- * @param *twi: доступ к методам объекта Wire
+ * @param _twi: доступ к методам объекта Wire
  */
-AS5600::AS5600(TwoWire *twi) : __wire(twi ? twi : &Wire) {
+AS5600::AS5600(TwoWire* _twi) : _wire_(_twi ? _twi : &Wire) {
   // Ничего
 }
  
@@ -33,12 +33,12 @@ AS5600::AS5600(TwoWire *twi) : __wire(twi ? twi : &Wire) {
  * @brief: передать один байт адреса регистра с которого будет идти чтение
  */
 void AS5600::AS_SendFirstRegister(uint8_t _reg_addr) {
-  // Начать передачу по адресу 0x36
-  __wire->beginTransmission(AS5600_I2C_ADDRESS);
+  // Начать передачу по адресу
+  _wire_->beginTransmission(AS5600_I2C_ADDRESS);
   // Отправить байт регистра
-  __wire->write(_reg_addr);
+  _wire_->write(_reg_addr);
   // Завершить соединение
-  __wire->endTransmission();
+  _wire_->endTransmission();
 }
 /* 
  * @brief: запросить один байт данных из буфера
@@ -48,14 +48,14 @@ void AS5600::AS_SendFirstRegister(uint8_t _reg_addr) {
 uint8_t AS5600::AS_RequestSingleRegister(void) {
   uint8_t single_byte = 0;
   
-  // Запросить байт данных по адресу 0x36
-  __wire->requestFrom(AS5600_I2C_ADDRESS, 1);
+  // Запросить байт данных по адресу
+  _wire_->requestFrom(AS5600_I2C_ADDRESS, (uint8_t)1);
   // Прочитать данные из буфера
-  if (__wire->available() >= 1 ) {
-    single_byte = __wire->read();
+  if (_wire_->available() >= 1 ) {
+    single_byte = _wire_->read();
   }
   // Завершить соединение
-  __wire->endTransmission();
+  _wire_->endTransmission();
 
   return single_byte;
 }
@@ -68,15 +68,15 @@ uint16_t AS5600::AS_RequestPairRegisters(void) {
   uint8_t low_byte = 0;
   uint8_t high_byte = 0;
   
-  // Запросить два байта данных по адресу 0x36
-  __wire->requestFrom(AS5600_I2C_ADDRESS, 2);
+  // Запросить два байта данных по адресу
+  _wire_->requestFrom(AS5600_I2C_ADDRESS, (uint8_t)2);
   // Прочитать данные из буфера
-  if (__wire->available() >= 1 ) {
-    high_byte = __wire->read();
-    low_byte = __wire->read();
+  if (_wire_->available() >= 1 ) {
+    high_byte = _wire_->read();
+    low_byte = _wire_->read();
   }
   // Завершить соединение
-  __wire->endTransmission();
+  _wire_->endTransmission();
   
   return ((high_byte << 8) | low_byte);
 }
@@ -86,12 +86,12 @@ uint16_t AS5600::AS_RequestPairRegisters(void) {
  * @param _payload: 1 байт полезных данных
  */
 void AS5600::AS_WriteOneByte(uint8_t _reg, uint8_t _payload) {
-  // Начать передачу по адресу 0x36 для прередачи байта данных в регистр
-  __wire->beginTransmission(AS5600_I2C_ADDRESS);
-  __wire->write(_reg);
-  __wire->write(_payload);
+  // Начать передачу по адресу для прередачи байта данных в регистр
+  _wire_->beginTransmission(AS5600_I2C_ADDRESS);
+  _wire_->write(_reg);
+  _wire_->write(_payload);
   // Завершить соединение
-  __wire->endTransmission();
+  _wire_->endTransmission();
 }
 /*
  * @brief: записать значение размером 2 байта в произвольный регистр размером 2 байта
@@ -100,18 +100,18 @@ void AS5600::AS_WriteOneByte(uint8_t _reg, uint8_t _payload) {
  * @param _payload: 2 байта полезных данных
  */
 void AS5600::AS_WriteTwoBytes(uint8_t _low_register, uint8_t _high_register, uint16_t _payload) {
-  // Начать передачу по адресу 0x36 для прередачи старшего байта данных в старший регистр
-  __wire->beginTransmission(AS5600_I2C_ADDRESS);
-  __wire->write(_high_register);
-  __wire->write(_payload >> 8);
+  // Начать передачу по адресу для прередачи старшего байта данных в старший регистр
+  _wire_->beginTransmission(AS5600_I2C_ADDRESS);
+  _wire_->write(_high_register);
+  _wire_->write(_payload >> 8);
   // Завершить соединение
-  __wire->endTransmission();
-  // Начать передачу по адресу 0x36 для передачи младшего байта данных в младший регистр
-  __wire->beginTransmission(AS5600_I2C_ADDRESS);
-  __wire->write(_low_register);
-  __wire->write(_payload & 0xFF);
+  _wire_->endTransmission();
+  // Начать передачу по адресу для передачи младшего байта данных в младший регистр
+  _wire_->beginTransmission(AS5600_I2C_ADDRESS);
+  _wire_->write(_low_register);
+  _wire_->write(_payload & 0xFF);
   // Завершить соединение
-  __wire->endTransmission();
+  _wire_->endTransmission();
 }
 
 // ########## PUBLIC ##########
@@ -120,9 +120,8 @@ void AS5600::AS_WriteTwoBytes(uint8_t _low_register, uint8_t _high_register, uin
  * @note: использовать, если действие не было выполнено ранее
  */
 void AS5600::begin(void) {
-  __wire->begin();
+  _wire_->begin();
 }
-#if defined (ESP8266) || defined(ESP32)
 /* 
  * @brief: вызов метода Wire.begin(SDA, SCL) с указанием выводов
  * @param _sda_pin: пользовательский контакт SDA
@@ -130,23 +129,26 @@ void AS5600::begin(void) {
  * @note: использовать, если действие не было выполнено ранее.
  *   Применимо для платформ на базе ESP8266 и ESP32
  */
+#if defined(ESP8266) || defined(ESP32)
 void AS5600::begin(int8_t _sda_pin, int8_t _scl_pin) {
-  __wire->begin(_sda_pin, _scl_pin);
+  _wire_->begin(_sda_pin, _scl_pin);
 }
 #endif
 /* 
  * @brief: настройка частоты шины I2C
  * @note: использовать, если частота шины меняется из-за разных устройств. по умолчанию 400кГц
  */
-void AS5600::setClock(uint32_t freq_hz) {
-  __wire->setClock(freq_hz);
+void AS5600::setClock(uint32_t _freq_hz) {
+  _wire_->setClock(_freq_hz);
 }
 /* 
  * @brief: отключение шины I2C
  */
+#if !defined(ESP8266)
 void AS5600::end(void) {
-  __wire->end();
+  _wire_->end();
 }
+#endif
 /*
  * @brief: загружает данные из энергонезависимой памяти датчика в регистры ZPOS(11:0), MPOS(11:0), MANG(11:0), CONF(13:0)
  *  если были установлены какие-либо значения в эти регистры то, они будут заменены значениями из энергонезависимой памяти
@@ -155,29 +157,29 @@ void AS5600::end(void) {
  *  Option C: Programming a Maximum Angular Range Through the I²C Interface (Step 4)
  */
 void AS5600::loadSavedValues(void) {
-  // Начать передачу по адресу 0x36
-  __wire->beginTransmission(AS5600_I2C_ADDRESS);
-  __wire->write(AS5600_BURN_REG);
+  // Начать передачу по адресу
+  _wire_->beginTransmission(AS5600_I2C_ADDRESS);
+  _wire_->write(AS5600_BURN_REG);
   // Отправить 0x01
-  __wire->write(AS5600_CMD_BURN_LOAD_OTP_CONTENT_0);
+  _wire_->write(AS5600_CMD_BURN_LOAD_OTP_CONTENT_0);
   // Завершить соединение
-  __wire->endTransmission();
+  _wire_->endTransmission();
   
-  // Начать передачу по адресу 0x36
-  __wire->beginTransmission(AS5600_I2C_ADDRESS);
-  __wire->write(AS5600_BURN_REG);
+  // Начать передачу по адресу
+  _wire_->beginTransmission(AS5600_I2C_ADDRESS);
+  _wire_->write(AS5600_BURN_REG);
   // Отправить 0x11
-  __wire->write(AS5600_CMD_BURN_LOAD_OTP_CONTENT_1);
+  _wire_->write(AS5600_CMD_BURN_LOAD_OTP_CONTENT_1);
   // Завершить соединение
-  __wire->endTransmission();
+  _wire_->endTransmission();
   
-  // Начать передачу по адресу 0x36
-  __wire->beginTransmission(AS5600_I2C_ADDRESS);
-  __wire->write(AS5600_BURN_REG);
+  // Начать передачу по адресу
+  _wire_->beginTransmission(AS5600_I2C_ADDRESS);
+  _wire_->write(AS5600_BURN_REG);
   // Отправить 0x10
-  __wire->write(AS5600_CMD_BURN_LOAD_OTP_CONTENT_2);
+  _wire_->write(AS5600_CMD_BURN_LOAD_OTP_CONTENT_2);
   // Завершить соединение
-  __wire->endTransmission();
+  _wire_->endTransmission();
 }
 /*
  * @brief: узнать подкючен ли датчик к линии I2C
@@ -187,9 +189,9 @@ void AS5600::loadSavedValues(void) {
  *  AS5600_DEFAULT_REPORT_OK - подключен
  */
 bool AS5600::isConnected(void) {
-  // Начать передачу по адресу 0x36
-  __wire->beginTransmission(AS5600_I2C_ADDRESS);
-  return (!__wire->endTransmission(AS5600_I2C_ADDRESS)) ? AS5600_DEFAULT_REPORT_OK : AS5600_DEFAULT_REPORT_ERROR;
+  // Начать передачу по адресу
+  _wire_->beginTransmission(AS5600_I2C_ADDRESS);
+  return (!_wire_->endTransmission(AS5600_I2C_ADDRESS)) ? AS5600_DEFAULT_REPORT_OK : AS5600_DEFAULT_REPORT_ERROR;
 }
 
 /*
@@ -197,39 +199,39 @@ bool AS5600::isConnected(void) {
  * @param _btn_min_agc: нижняя граница срабатывания кнопки
  */
 void AS5600::setButtonMinAGC(byte _btn_min_agc) {
-  _virtual_button.minimum_agc = _btn_min_agc;
+  _virtual_button_.minimum_agc = _btn_min_agc;
 }
 /*
  * @brief: получить минимальное значение срабатывания кнопки
  */
 byte AS5600::getButtonMinAGC(void) {
-  return _virtual_button.minimum_agc;
+  return _virtual_button_.minimum_agc;
 }
 /*
  * @brief: установить новое максимальное значение срабатывания кнопки
  * @param _btn_max_agc: верхняя граница срабатывания кнопки
  */
 void AS5600::setButtonMaxAGC(byte _btn_max_agc) {
-  _virtual_button.maximum_agc = _btn_max_agc;
+  _virtual_button_.maximum_agc = _btn_max_agc;
 }
 /*
  * @brief: получить максимальное значение срабатывания кнопки
  */
 byte AS5600::getButtonMaxAGC(void) {
-  return _virtual_button.maximum_agc;
+  return _virtual_button_.maximum_agc;
 }
 /*
  * @brief: установить новое значение отклонения срабатывания кнопки
  * @param _btn_div: значение отклонения
  */
 void AS5600::setButtonDeviation(byte _btn_div) {
-  _virtual_button.deviation = _btn_div;
+  _virtual_button_.deviation = _btn_div;
 }
 /*
  * @brief: получить значение отклонения срабатывания кнопки
  */
 byte AS5600::getButtonDeviation(void) {
-  return _virtual_button.deviation;
+  return _virtual_button_.deviation;
 }
 /*
  * @brief: узнать нажата ли виртуальная кнопка
@@ -240,11 +242,11 @@ byte AS5600::getButtonDeviation(void) {
  */
 bool AS5600::isButtonPressed(void) {
   byte agc_value = AS5600::getAutomaticGainControl();
-  if(!_virtual_button.falg_button_state && (agc_value < (_virtual_button.minimum_agc + _virtual_button.deviation))) {
-    _virtual_button.falg_button_state = true;
-	return AS5600_DEFAULT_REPORT_OK;
-  }else {
-	return AS5600_DEFAULT_REPORT_ERROR;
+  if (!_virtual_button_.falg_button_state && (agc_value < (_virtual_button_.minimum_agc + _virtual_button_.deviation))) {
+    _virtual_button_.falg_button_state = true;
+    return AS5600_DEFAULT_REPORT_OK;
+  } else {
+    return AS5600_DEFAULT_REPORT_ERROR;
   }
 }
 /*
@@ -256,11 +258,11 @@ bool AS5600::isButtonPressed(void) {
  */
 bool AS5600::isButtonReleased(void) {
   byte agc_value = AS5600::getAutomaticGainControl();
-  if(_virtual_button.falg_button_state && (agc_value > (_virtual_button.maximum_agc - _virtual_button.deviation))) {
-    _virtual_button.falg_button_state = false;
-	return AS5600_DEFAULT_REPORT_OK;
-  }else {
-	return AS5600_DEFAULT_REPORT_ERROR;
+  if (_virtual_button_.falg_button_state && (agc_value > (_virtual_button_.maximum_agc - _virtual_button_.deviation))) {
+    _virtual_button_.falg_button_state = false;
+    return AS5600_DEFAULT_REPORT_OK;
+  } else {
+    return AS5600_DEFAULT_REPORT_ERROR;
   }
 }
 /*
@@ -270,6 +272,13 @@ bool AS5600::isButtonReleased(void) {
 void AS5600::attachDirectionPin(byte _pin_dir) {
   _pin_direction_ = _pin_dir;
   pinMode(_pin_direction_, OUTPUT);
+}
+/*
+ * @brief: освободить назначенный контакт микроконтроллера для управления контактом DIR датчика
+ */
+void AS5600::detachDirectionPin(void) {
+  _pin_direction_ = -1;
+  pinMode(_pin_direction_, INPUT);
 }
 /* 
  * @brief: установить положительное направление вращения по часовой стрелке или против часовой стрелки
@@ -281,7 +290,7 @@ void AS5600::attachDirectionPin(byte _pin_dir) {
  *  AS5600_DEFAULT_REPORT_OK - направление изменено
  */
 bool AS5600::setDirection(AS5600DirectionPolarity _direction_polarity) {
-  if(_pin_direction_ == -1) {
+  if (_pin_direction_ == -1) {
     return AS5600_DEFAULT_REPORT_ERROR;
   }
   digitalWrite(_pin_direction_, _direction_polarity);
@@ -295,7 +304,7 @@ bool AS5600::setDirection(AS5600DirectionPolarity _direction_polarity) {
  *  AS5600_DEFAULT_REPORT_OK - направление изменено
  */
 bool AS5600::reverseDirection(void) {
-  if(_pin_direction_ == -1) {
+  if (_pin_direction_ == -1) {
     return AS5600_DEFAULT_REPORT_ERROR;
   }
   digitalWrite(_pin_direction_, !digitalRead(_pin_direction_));
@@ -1323,36 +1332,36 @@ word AS5600::getMagnitude(void) {
 AS5600BurnReports AS5600::burnZeroAndMaxPositions(AS5600SpecialVerifyFlags _use_special_verify) {
   AS5600BurnReports result = AS5600_BURN_REPROT_SENSOR_NOT_CONNECTED;
   
-  if(AS5600::isConnected()) { // Если датчик подключен
+  if (AS5600::isConnected()) { // Если датчик подключен
     // Собираем значениях из критически выжных регистров
     byte burn_count = AS5600::getBurnPositionsCount();
     word z_pos = AS5600::getZeroPosition();
     word m_pos = AS5600::getMaxPosition();
-    if(burn_count < AS5600_MAX_VALUE_ZMCO) { // Если ресурс для записи не исчерпан
-      if(z_pos && m_pos) { // Если значения начального и максимального положения не 0
+    if (burn_count < AS5600_MAX_VALUE_ZMCO) { // Если ресурс для записи не исчерпан
+      if (z_pos && m_pos) { // Если значения начального и максимального положения не 0
         // Наличие магнита проверяем НА ПОСЛЕДНЕМ ШАГЕ, перед отправлением команды на запись!
-        if(AS5600::isMagnetDetected()) { // Если магнит обнаружен
+        if (AS5600::isMagnetDetected()) { // Если магнит обнаружен
           AS5600::AS_WriteOneByte(AS5600_BURN_REG, AS5600_CMD_BURN_ANGLE); // Отправляем команду записи
-          if(_use_special_verify) { // Если используется проверка записанного
+          if (_use_special_verify) { // Если используется проверка записанного
             AS5600::loadSavedValues(); // Загружаем из памяти ранее записанные данные
             // Получаем загруженные данные для сравнения
             word z_pos_now = AS5600::getZeroPosition();
             word m_pos_now = AS5600::getMaxPosition();
-            if(z_pos == z_pos_now && m_pos == m_pos_now) { // Если записываемые данные совпадают с сохраненными
+            if (z_pos == z_pos_now && m_pos == m_pos_now) { // Если записываемые данные совпадают с сохраненными
               result = AS5600_BURN_REPROT_WRITE_OK;
-            }else {
+            } else {
               result = AS5600_BURN_REPROT_WRITE_WRONG;
             }
-          }else {
+          } else {
             result = AS5600_BURN_REPROT_WRITE_OK_WITHOUT_VERIFY;
           }
-        }else {
+        } else {
           result = AS5600_BURN_REPROT_MAGNET_NOT_FOUND;
         }
-      }else {
+      } else {
         result = AS5600_BURN_REPROT_ZPOS_MPOS_NOT_SET;
       }
-    }else {
+    } else {
       result = AS5600_BURN_REPROT_ATTEMPTS_ENDED;
     }
   }
@@ -1378,36 +1387,36 @@ AS5600BurnReports AS5600::burnZeroAndMaxPositions(AS5600SpecialVerifyFlags _use_
 AS5600BurnReports AS5600::burnMaxAngleAndConfigurationValue(AS5600SpecialVerifyFlags _use_special_verify) {
   AS5600BurnReports result = AS5600_BURN_REPROT_SENSOR_NOT_CONNECTED;
   
-  if(AS5600::isConnected()) { // Если датчик подключен
+  if (AS5600::isConnected()) { // Если датчик подключен
     // Собираем значениях из критически выжных регистров
     byte burn_count = AS5600::getBurnPositionsCount();
     word m_ang = AS5600::getMaxAngle();
     word conf = AS5600::getRawConfigurationValue();
-    if(burn_count == 0) { // Если ресурс для записи не исчерпан
-      if(AS5600::getMaxAngle() >= AS5600_MIN_ANGLE_VALUE_DEC) { // Если значение угла подходит
+    if (burn_count == 0) { // Если ресурс для записи не исчерпан
+      if (AS5600::getMaxAngle() >= AS5600_MIN_ANGLE_VALUE_DEC) { // Если значение угла подходит
         // Наличие магнита проверяем НА ПОСЛЕДНЕМ ШАГЕ, перед отправлением команды на запись!
-        if(AS5600::isMagnetDetected()) { // Если магнит обнаружен
+        if (AS5600::isMagnetDetected()) { // Если магнит обнаружен
           AS5600::AS_WriteOneByte(AS5600_BURN_REG, AS5600_CMD_BURN_SETTINGS); // Отправляем команду записи настроек
-          if(_use_special_verify) { // Если используется проверка записанного
+          if (_use_special_verify) { // Если используется проверка записанного
             AS5600::loadSavedValues(); // Загружаем из памяти ранее записанные данные
             // Получаем загруженные данные для сравнения
             word m_ang_now = AS5600::getMaxAngle();
             word conf_now = AS5600::getRawConfigurationValue();
-            if(m_ang == m_ang_now && conf == conf_now) { // Если записываемые данные совпадают с сохраненными
+            if (m_ang == m_ang_now && conf == conf_now) { // Если записываемые данные совпадают с сохраненными
               result = AS5600_BURN_REPROT_WRITE_OK;
-            }else {
+            } else {
               result = AS5600_BURN_REPROT_WRITE_WRONG;
             }
-          }else {
+          } else {
             result = AS5600_BURN_REPROT_WRITE_OK_WITHOUT_VERIFY;
           }
-        }else {
+        } else {
           result = AS5600_BURN_REPROT_MAGNET_NOT_FOUND;
         }
-      }else {
+      } else {
         result = AS5600_BURN_REPROT_ANGLE_VALUE_TOO_SMALL;
       }
-    }else {
+    } else {
       result = AS5600_BURN_REPROT_ATTEMPTS_ENDED;
     }
   }

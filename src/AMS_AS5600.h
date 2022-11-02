@@ -14,7 +14,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.6 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.7 / License MIT / Скляр Роман S-LAB
  */
 
 #pragma once
@@ -22,10 +22,10 @@
 #include "Wire.h"
 
 /*=== Настройки шины I2C датчика ===*/
-#define AS5600_I2C_CLOCK_100KHZ 100000UL
-#define AS5600_I2C_CLOCK_400KHZ 400000UL
-#define AS5600_I2C_CLOCK_1MHZ   1000000UL
-#define AS5600_I2C_ADDRESS      0x36
+const uint32_t AS5600_I2C_CLOCK_100KHZ = 100000UL;
+const uint32_t AS5600_I2C_CLOCK_400KHZ = 400000UL;
+const uint32_t AS5600_I2C_CLOCK_1MHZ   = 1000000UL;
+const uint8_t AS5600_I2C_ADDRESS       = 0x36;
 
 /*=== Выводы для DIR на разных платах (зависит от ядра) ===*/
 #define STM32_AS5600_DEF_PIN   PC13
@@ -35,15 +35,15 @@
 
 /*=== Адреса регистров датчика ===*/
 /* Configuration Registers */
-#define AS5600_CONFIG_REG_ZMCO   0x00
-#define AS5600_CONFIG_REG_ZPOS_H 0x01
-#define AS5600_CONFIG_REG_ZPOS_L 0x02
-#define AS5600_CONFIG_REG_MPOS_H 0x03
-#define AS5600_CONFIG_REG_MPOS_L 0x04
-#define AS5600_CONFIG_REG_MANG_H 0x05
-#define AS5600_CONFIG_REG_MANG_L 0x06
-#define AS5600_CONFIG_REG_CONF_H 0x07
-#define AS5600_CONFIG_REG_CONF_L 0x08
+const uint8_t AS5600_CONFIG_REG_ZMCO   = 0x00;
+const uint8_t AS5600_CONFIG_REG_ZPOS_H = 0x01;
+const uint8_t AS5600_CONFIG_REG_ZPOS_L = 0x02;
+const uint8_t AS5600_CONFIG_REG_MPOS_H = 0x03;
+const uint8_t AS5600_CONFIG_REG_MPOS_L = 0x04;
+const uint8_t AS5600_CONFIG_REG_MANG_H = 0x05;
+const uint8_t AS5600_CONFIG_REG_MANG_L = 0x06;
+const uint8_t AS5600_CONFIG_REG_CONF_H = 0x07;
+const uint8_t AS5600_CONFIG_REG_CONF_L = 0x08;
 // Значимые биты регистра CONF_H
 enum AS5600ConfHighRegisterBits {
   AS5600_CONF_BIT_SF_0,
@@ -65,15 +65,15 @@ enum AS5600ConfLowRegisterBits {
   AS5600_CONF_BIT_PWMF_1,
 };
 /* Output Registers */
-#define AS5600_OUT_REG_RAW_ANGLE_H 0x0C
-#define AS5600_OUT_REG_RAW_ANGLE_L 0x0D
-#define AS5600_OUT_REG_ANGLE_H 0x0E
-#define AS5600_OUT_REG_ANGLE_L 0x0F
+const uint8_t AS5600_OUT_REG_RAW_ANGLE_H = 0x0C;
+const uint8_t AS5600_OUT_REG_RAW_ANGLE_L = 0x0D;
+const uint8_t AS5600_OUT_REG_ANGLE_H = 0x0E;
+const uint8_t AS5600_OUT_REG_ANGLE_L = 0x0F;
 /* Status Registers */
-#define AS5600_STATUS_REG 0x0B
-#define AS5600_STATUS_REG_AGC 0x1A
-#define AS5600_STATUS_REG_MAGNITUDE_H 0x1B
-#define AS5600_STATUS_REG_MAGNITUDE_L 0x1C
+const uint8_t AS5600_STATUS_REG = 0x0B;
+const uint8_t AS5600_STATUS_REG_AGC = 0x1A;
+const uint8_t AS5600_STATUS_REG_MAGNITUDE_H = 0x1B;
+const uint8_t AS5600_STATUS_REG_MAGNITUDE_L = 0x1C;
 // Значимые биты регистра STATUS
 enum AS5600StatusRegisterBits {
   AS5600_STATUS_BIT_MH_3 = 3,
@@ -81,27 +81,27 @@ enum AS5600StatusRegisterBits {
   AS5600_STATUS_BIT_MD_5,
 };
 /* Burn Commands */
-#define AS5600_BURN_REG 0xFF
+const uint8_t AS5600_BURN_REG = 0xFF;
 // Команды регистра BURN
-#define AS5600_CMD_BURN_ANGLE 0x80
-#define AS5600_CMD_BURN_SETTINGS 0x40
+const uint8_t AS5600_CMD_BURN_ANGLE = 0x80;
+const uint8_t AS5600_CMD_BURN_SETTINGS = 0x40;
 // Option A: Angle Programming Through the I²C Interface (Step 7)
 // Option C: Programming a Maximum Angular Range Through the I²C Interface (Step 4)
-#define AS5600_CMD_BURN_LOAD_OTP_CONTENT_0 0x01
-#define AS5600_CMD_BURN_LOAD_OTP_CONTENT_1 0x11
-#define AS5600_CMD_BURN_LOAD_OTP_CONTENT_2 0x10
+const uint8_t AS5600_CMD_BURN_LOAD_OTP_CONTENT_0 = 0x01;
+const uint8_t AS5600_CMD_BURN_LOAD_OTP_CONTENT_1 = 0x11;
+const uint8_t AS5600_CMD_BURN_LOAD_OTP_CONTENT_2 = 0x10;
 
 /*=== Вспомогательные значения ===*/
 // Предельное значение регистра CONF_ZMCO
-#define AS5600_MAX_VALUE_ZMCO 0x03
+const uint8_t AS5600_MAX_VALUE_ZMCO = 0x03;
 // Минимальный угол 18 градусов, примерно 205
-#define AS5600_MIN_ANGLE_VALUE_DEC 205
+const uint8_t AS5600_MIN_ANGLE_VALUE_DEC = 205; // 4096 /360 * 18 = 204.8
 // Ответы стандартного вида успех/ошибка
-#define AS5600_DEFAULT_REPORT_ERROR false
-#define AS5600_DEFAULT_REPORT_OK    true
+const uint8_t AS5600_DEFAULT_REPORT_ERROR = 0;
+const uint8_t AS5600_DEFAULT_REPORT_OK    = 1;
 // Состояние сторожевого таймера
-#define AS5600_WATCHDOG_OFF false
-#define AS5600_WATCHDOG_ON  true
+const uint8_t AS5600_WATCHDOG_OFF = 0;
+const uint8_t AS5600_WATCHDOG_ON  = 1;
 // Режимы питания
 enum AS5600PowerModes {
   AS5600_NOM_POWER_MODE,
@@ -187,9 +187,9 @@ struct AS5600Button {
 
 class AS5600 {
   private:
-    TwoWire *__wire; // Объект для использования методов I2C
+    TwoWire* _wire_; // Объект для использования методов I2C
     int8_t _pin_direction_ = -1; // Контакт микроконтроллера к которому подключен вывод DIR датчика
-    AS5600Button _virtual_button; // Структура с параметрами виртуальной кнопки
+    AS5600Button _virtual_button_; // Структура с параметрами виртуальной кнопки
 
   protected:
     void AS_SendFirstRegister(uint8_t _reg_addr); // Отправить адрес регистра
@@ -201,14 +201,16 @@ class AS5600 {
     void AS_WriteTwoBytes(uint8_t _low_register, uint8_t _high_register, uint16_t _payload); // Запись двух байтов в двубайтовый регистр
 	
   public:
-    AS5600(TwoWire *twi); // Конструктор с использованием только интерфейса I2C
+    AS5600(TwoWire *_twi); // Конструктор с использованием только интерфейса I2C
 
     void begin(void); // Вызов Wire.begin()
-#if defined (ESP8266) || defined(ESP32)
+#if defined(ESP8266) || defined(ESP32)
     void begin(int8_t _sda_pin, int8_t _scl_pin); // Вызов Wire.begin(SDA, SCL) с указанием выводов
 #endif
-    void setClock(uint32_t freq_hz = AS5600_I2C_CLOCK_400KHZ); // Настройка частоты на 100кГц, 400кГц, 1МГц, или пользовательское значение (по умолчанию 400кГц)
+    void setClock(uint32_t _freq_hz = AS5600_I2C_CLOCK_400KHZ); // Настройка частоты на 100кГц, 400кГц, 1МГц, или пользовательское значение (по умолчанию 400кГц)
+#if !defined(ESP8266)
     void end(void); // Вызов Wire.end()
+#endif
 	
     void loadSavedValues(void); // Метод производителя для загрузки значений из памяти в регистры ZPOS, MPOS, MANG, CONF
 	
@@ -228,6 +230,7 @@ class AS5600 {
 	
     /* Управление контактом DIR датчика */
     void attachDirectionPin(byte _pin_dir); // Назначить контакт микроконтроллера для управления положительным направлением вращения
+    void detachDirectionPin(void); // Освоободить назначенный контакт микроконтроллера для управления положительным направлением вращения
     bool setDirection(AS5600DirectionPolarity _direction_polarity); // Установить положительное направление вращения (по/против часовой стрелки)
     bool reverseDirection(void); // Изменить положительное направление вращения на противоположное
     bool getDirection(void); // Получить текущее положительное направление вращения
