@@ -9,7 +9,7 @@
  * 2. Скетч настраивает микрокотроллер как мутимедийную клавиатуру
  *    используя класс BLE HID Consumer
  * 3. AS5600 не является инкрементальным энкодером, использовать его 
- *    таким образом, в реальных проектах, нежелтельно
+ *    таким образом, в реальных проектах, нежелательно
  * 
  * Подключение:
  * AS5600   Board
@@ -40,7 +40,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.0 / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.1 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеки
@@ -69,6 +69,8 @@ AS5600 Sensor(&Wire);
 BleKeyboard MmultimediaKeyboardBLE(BLE_KEYBOARD_NAME, BLE_KEYBOARD_MANUFACTURER, BLE_KEYBOARD_INIT_BAT_LAVEL);
 
 void setup() {
+  // Можно указать выводы для I2C, SDA=33 SCL=32
+  //Sensor.begin(33, 32)
   // Запускаем соединение
   Sensor.begin();
   // Настраиваем шину I2C на 400кГц
