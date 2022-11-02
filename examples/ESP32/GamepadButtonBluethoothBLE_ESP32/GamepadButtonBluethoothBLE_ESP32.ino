@@ -47,7 +47,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.0 / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.1 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеки
@@ -76,6 +76,8 @@ void setup() {
   Sensor.setButtonMaxAGC(MAX_AGC); // getButtonMaxAGC()
   Sensor.setButtonDeviation(DELTA_DIV); // getButtonDeviation()
   
+  // Можно указать выводы для I2C, SDA=33 SCL=32
+  //Sensor.begin(33, 32);
   // Запускаем соединение с датчиком
   Sensor.begin();
   // Настраиваем шину I2C на 1МГц
@@ -99,12 +101,12 @@ void loop() {
 
     // Если виртуальная кнопка датчика НАЖАТА
     if(Sensor.isButtonPressed()) {
-      GamepadBLE.press(BUTTON_4); // Отправляем сообщение с номером кнопки (4)
+      GamepadBLE.press(BUTTON_4); // Отправляем сообщение о нажатии с номером кнопки (4)
     }
 
     // Если виртуальная кнопка датчика ОТПУЩЕНА
     if(Sensor.isButtonReleased()) {
-      GamepadBLE.release(BUTTON_4); // Отправляем сообщение с номером кнопки (4)
+      GamepadBLE.release(BUTTON_4); // Отправляем сообщение об отпускании с номером кнопки (4)
     }
   }
 }
