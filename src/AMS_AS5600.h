@@ -192,13 +192,13 @@ class AS5600 {
     AS5600Button _virtual_button_; // Структура с параметрами виртуальной кнопки
 
   protected:
-    void AS_SendFirstRegister(uint8_t _reg_addr); // Отправить адрес регистра
+    virtual void AS_SendFirstRegister(uint8_t _reg_addr); // Отправить адрес регистра
 	
-    uint8_t AS_RequestSingleRegister(void); // Запрос значения регистра размером 1 байт
-    uint16_t AS_RequestPairRegisters(void); // Запрос значения регистра размером 2 байта
+    virtual uint8_t AS_RequestSingleRegister(void); // Запрос значения регистра размером 1 байт
+    virtual uint16_t AS_RequestPairRegisters(void); // Запрос значения регистра размером 2 байта
 	
-    void AS_WriteOneByte(uint8_t _reg, uint8_t _payload); // Запись одного байта в однобайтовый регистр
-    void AS_WriteTwoBytes(uint8_t _low_register, uint8_t _high_register, uint16_t _payload); // Запись двух байтов в двубайтовый регистр
+    virtual void AS_WriteOneByte(uint8_t _reg, uint8_t _payload); // Запись одного байта в однобайтовый регистр
+    virtual void AS_WriteTwoBytes(uint8_t _low_register, uint8_t _high_register, uint16_t _payload); // Запись двух байтов в двубайтовый регистр
 	
   public:
     AS5600(TwoWire *_twi); // Конструктор с использованием только интерфейса I2C
@@ -212,9 +212,9 @@ class AS5600 {
     void end(void); // Вызов Wire.end()
 #endif
 	
-    void loadSavedValues(void); // Метод производителя для загрузки значений из памяти в регистры ZPOS, MPOS, MANG, CONF
+    virtual void loadSavedValues(void); // Метод производителя для загрузки значений из памяти в регистры ZPOS, MPOS, MANG, CONF
 	
-    bool isConnected(void); // Проверка по стандартному алгоритму поиска устройств на шине I2C
+    virtual bool isConnected(void); // Проверка по стандартному алгоритму поиска устройств на шине I2C
 	
     /* Виртуальная кнопка */
     /** Настройки **/
