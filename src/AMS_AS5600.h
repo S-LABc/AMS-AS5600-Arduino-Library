@@ -14,7 +14,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.7 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.8 / License MIT / Скляр Роман S-LAB
  */
 
 #pragma once
@@ -187,11 +187,12 @@ struct AS5600Button {
 
 class AS5600 {
   private:
-    TwoWire* _wire_; // Объект для использования методов I2C
     int8_t _pin_direction_ = -1; // Контакт микроконтроллера к которому подключен вывод DIR датчика
     AS5600Button _virtual_button_; // Структура с параметрами виртуальной кнопки
 
   protected:
+    TwoWire* _wire_; // Объект для использования методов I2C
+
     virtual void AS_SendFirstRegister(uint8_t _reg_addr); // Отправить адрес регистра
 	
     virtual uint8_t AS_RequestSingleRegister(void); // Запрос значения регистра размером 1 байт
@@ -201,7 +202,7 @@ class AS5600 {
     virtual void AS_WriteTwoBytes(uint8_t _low_register, uint8_t _high_register, uint16_t _payload); // Запись двух байтов в двубайтовый регистр
 	
   public:
-    AS5600(TwoWire *_twi); // Конструктор с использованием только интерфейса I2C
+    AS5600(TwoWire* _twi); // Конструктор с использованием только интерфейса I2C
 
     void begin(void); // Вызов Wire.begin()
 #if defined(ESP8266) || defined(ESP32)
@@ -370,5 +371,5 @@ class AS5600 {
     
     /* Burn Commands */
     AS5600BurnReports burnZeroAndMaxPositions(AS5600SpecialVerifyFlags _use_special_verify = AS5600_FLAG_SPECIAL_VERIFY_ENABLE); // Записать навсегда ZPOS, MPOS. CMD_BURN_ANGLE [3 РАЗА МАКСИМУМ!]
-    AS5600BurnReports burnMaxAngleAndConfigurationValue(AS5600SpecialVerifyFlags _use_special_verify = AS5600_FLAG_SPECIAL_VERIFY_ENABLE); // Записать навсегда MANG, CONF. CMD_BURN_SETTINGS [1 РАЗ МАКСИМУМ!]
+    virtual AS5600BurnReports burnMaxAngleAndConfigurationValue(AS5600SpecialVerifyFlags _use_special_verify = AS5600_FLAG_SPECIAL_VERIFY_ENABLE); // Записать навсегда MANG, CONF. CMD_BURN_SETTINGS [1 РАЗ МАКСИМУМ!]
 };
