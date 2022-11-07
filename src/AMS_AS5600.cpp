@@ -183,7 +183,7 @@ void AS5600::loadSavedValues(void) {
 }
 /*
  * @brief: узнать подключен ли датчик к линии I2C
- * @note: используется алгоритм стандортного поиска устройств на шина I2C
+ * @note: используется алгоритм стандартного поиска устройств на шина I2C
  * @return:
  *  AS5600_DEFAULT_REPORT_ERROR - не подключен
  *  AS5600_DEFAULT_REPORT_OK - подключен
@@ -629,7 +629,7 @@ AS5600Hysteresis AS5600::getHysteresis(void) {
  */
 void AS5600::setHysteresis(AS5600Hysteresis _hysteresis) {
   AS_SendFirstRegister(AS5600_CONFIG_REG_CONF_L);
-  uint8_t conf_l_raw =AS_RequestSingleRegister();
+  uint8_t conf_l_raw = AS_RequestSingleRegister();
   AS_WriteOneByte(AS5600_CONFIG_REG_CONF_L, conf_l_raw |= (_hysteresis << AS5600_CONF_BIT_HYST_0));
 }
 /*
