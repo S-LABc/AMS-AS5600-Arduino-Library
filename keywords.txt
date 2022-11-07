@@ -29,10 +29,12 @@ setButtonMaxAGC	KEYWORD2
 getButtonMaxAGC	KEYWORD2
 setButtonDeviation	KEYWORD2
 getButtonDeviation	KEYWORD2
+
 isButtonPressed	KEYWORD2
 isButtonReleased	KEYWORD2
 
 attachDirectionPin	KEYWORD2
+detachDirectionPin	KEYWORD2
 setDirection	KEYWORD2
 reverseDirection	KEYWORD2
 getDirection	KEYWORD2
@@ -178,7 +180,10 @@ AS5600_I2C_CLOCK_100KHZ	LITERAL1
 AS5600_I2C_CLOCK_400KHZ	LITERAL1
 AS5600_I2C_CLOCK_1MHZ	LITERAL1
 
+AS5600_I2C_ADDRESS	LITERAL1
+
 STM32_AS5600_DEF_PIN	LITERAL1
+ESP8266_AS5600_DEF_PIN	LITERAL1
 ESP32_AS5600_DEF_PIN	LITERAL1
 ARDUINO_AS5600_DEF_PIN	LITERAL1
 
@@ -307,3 +312,46 @@ AS5600_BURN_REPROT_ATTEMPTS_ENDED	LITERAL1
 AS5600_BURN_REPROT_ANGLE_VALUE_TOO_SMALL	LITERAL1
 
 AS5600Button	LITERAL1
+
+
+#######################################
+# Syntax Coloring Map For AMS_AS5600L
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+AMS_AS5600L	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+AS5600L	KEYWORD2
+
+findDevice	KEYWORD2
+
+getRegisterAddressI2C	KEYWORD2
+setRegisterAddressI2C	KEYWORD2
+setRegisterAddressI2CVerify	KEYWORD2
+
+getRegisterUpdateI2C	KEYWORD2
+setRegisterUpdateI2C	KEYWORD2
+setRegisterUpdateI2CVerify	KEYWORD2
+
+getAddressI2C	KEYWORD2
+setAddressI2C	KEYWORD2
+setAddressI2CVerify	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+RESERVED_I2C_ADDR_L	LITERAL1
+RESERVED_I2C_ADDR_H	LITERAL1
+
+AS5600L_DEFAULT_I2C_ADDRESS	LITERAL1
+
+AS5600L_CONFIG_REG_I2CADDR	LITERAL1
+AS5600L_CONFIG_REG_I2CUPDT	LITERAL1
