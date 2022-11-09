@@ -282,7 +282,7 @@ class AS5600 {
     bool disableHysteresisVerify(void); // Тоже самое, но с подтверждением
     void enableHysteresis1LSB(void); // Включить гистерезис 1 LSB
     bool enableHysteresis1LSBVerify(void); // Тоже самое, но с подтверждением
-    void enableHysteresis2LSB(void); // Включить гистерезис 3 LSB
+    void enableHysteresis2LSB(void); // Включить гистерезис 2 LSB
     bool enableHysteresis2LSBVerify(void); // Тоже самое, но с подтверждением
     void enableHysteresis3LSB(void); // Включить гистерезис 3 LSB
     bool enableHysteresis3LSBVerify(void); // Тоже самое, но с подтверждением
