@@ -14,7 +14,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.8 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.9 / License MIT / Скляр Роман S-LAB
  */
 
 #include "AMS_AS5600.h"
@@ -1261,7 +1261,7 @@ word AS5600::getScaledAngle(void) {
  */
 AS5600StatusReports AS5600::getStatus(void) {
   AS_SendFirstRegister(AS5600_STATUS_REG);
-  return (AS5600StatusReports)AS_RequestSingleRegister();
+  return (AS5600StatusReports)((AS_RequestSingleRegister() >> AS5600_STATUS_BIT_MH_3) & 0x07); // 0x07 = 0b00000111
 }
 /*
  * @brief: определить наличие магнита. регистр STATUS (MD:5)
