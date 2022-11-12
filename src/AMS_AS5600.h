@@ -204,13 +204,13 @@ class AS5600 {
   public:
     AS5600(TwoWire* _twi); // Конструктор с использованием только интерфейса I2C
 
-    void begin(void); // Вызов Wire.begin()
+    virtual void begin(void); // Вызов Wire.begin()
 #if defined(ESP8266) || defined(ESP32)
-    void begin(int8_t _sda_pin, int8_t _scl_pin); // Вызов Wire.begin(SDA, SCL) с указанием выводов
+    virtual void begin(int8_t _sda_pin, int8_t _scl_pin); // Вызов Wire.begin(SDA, SCL) с указанием выводов
 #endif
-    void setClock(uint32_t _freq_hz = AS5600_I2C_CLOCK_400KHZ); // Настройка частоты на 100кГц, 400кГц, 1МГц, или пользовательское значение (по умолчанию 400кГц)
+    virtual void setClock(uint32_t _freq_hz = AS5600_I2C_CLOCK_400KHZ); // Настройка частоты на 100кГц, 400кГц, 1МГц, или пользовательское значение (по умолчанию 400кГц)
 #if !defined(ESP8266)
-    void end(void); // Вызов Wire.end()
+    virtual void end(void); // Вызов Wire.end()
 #endif
 	
     virtual void loadSavedValues(void); // Метод производителя для загрузки значений из памяти в регистры ZPOS, MPOS, MANG, CONF
@@ -219,157 +219,157 @@ class AS5600 {
 	
     /* Виртуальная кнопка */
     /** Настройки **/
-    void setButtonMinAGC(byte _btn_min_agc); // Установить новое минимальное значение срабатывания кнопки
-    byte getButtonMinAGC(void); // Получить минимальное значение срабатывания кнопки
-    void setButtonMaxAGC(byte _btn_max_agc); // Установить новое максимальное значение срабатывания кнопки
-    byte getButtonMaxAGC(void); // Получить максимальное значение срабатывания кнопки
-    void setButtonDeviation(byte _btn_div); // Установить новое значение отклонения срабатывания кнопки
-    byte getButtonDeviation(void); // Получить значение отклонения срабатывания кнопки
+    virtual void setButtonMinAGC(byte _btn_min_agc); // Установить новое минимальное значение срабатывания кнопки
+    virtual byte getButtonMinAGC(void); // Получить минимальное значение срабатывания кнопки
+    virtual void setButtonMaxAGC(byte _btn_max_agc); // Установить новое максимальное значение срабатывания кнопки
+    virtual byte getButtonMaxAGC(void); // Получить максимальное значение срабатывания кнопки
+    virtual void setButtonDeviation(byte _btn_div); // Установить новое значение отклонения срабатывания кнопки
+    virtual byte getButtonDeviation(void); // Получить значение отклонения срабатывания кнопки
     /** События **/
-    bool isButtonPressed(void); // Проверка виртуальной кнопки на состояние НАЖАТА
-    bool isButtonReleased(void); // Проверка виртуальной кнопки на состояние ОТПУЩЕНА
+    virtual bool isButtonPressed(void); // Проверка виртуальной кнопки на состояние НАЖАТА
+    virtual bool isButtonReleased(void); // Проверка виртуальной кнопки на состояние ОТПУЩЕНА
 	
     /* Управление контактом DIR датчика */
-    void attachDirectionPin(byte _pin_dir); // Назначить контакт микроконтроллера для управления положительным направлением вращения
-    void detachDirectionPin(void); // Освоободить назначенный контакт микроконтроллера для управления положительным направлением вращения
-    bool setDirection(AS5600DirectionPolarity _direction_polarity); // Установить положительное направление вращения (по/против часовой стрелки)
-    bool reverseDirection(void); // Изменить положительное направление вращения на противоположное
-    bool getDirection(void); // Получить текущее положительное направление вращения
+    virtual void attachDirectionPin(byte _pin_dir); // Назначить контакт микроконтроллера для управления положительным направлением вращения
+    virtual void detachDirectionPin(void); // Освоободить назначенный контакт микроконтроллера для управления положительным направлением вращения
+    virtual bool setDirection(AS5600DirectionPolarity _direction_polarity); // Установить положительное направление вращения (по/против часовой стрелки)
+    virtual bool reverseDirection(void); // Изменить положительное направление вращения на противоположное
+    virtual bool getDirection(void); // Получить текущее положительное направление вращения
 	
     /* Configuration Registers */
-    byte getBurnPositionsCount(void); // Получить количество записей значений в ZPOS и MPOS (с завода ZMCO = 00). 0 - 3
+    virtual byte getBurnPositionsCount(void); // Получить количество записей значений в ZPOS и MPOS (с завода ZMCO = 00). 0 - 3
 	
-    word getZeroPosition(void); // Получить значение начального положения (начальный угол). 0 - 4095
-    void setZeroPosition(word _zero_position); // Установить новое начальное положение ZPOS
-    bool setZeroPositionVerify(word _zero_position); // Тоже самое, но с подтверждением
-    void setZeroPositionViaRawAngle(void); // Установить новое начальное положение ZPOS используя нынешнее положение магнита (getRawAngle)
-    bool setZeroPositionViaRawAngleVerify(void); // Тоже самое, но с подтверждением
+    virtual word getZeroPosition(void); // Получить значение начального положения (начальный угол). 0 - 4095
+    virtual void setZeroPosition(word _zero_position); // Установить новое начальное положение ZPOS
+    virtual bool setZeroPositionVerify(word _zero_position); // Тоже самое, но с подтверждением
+    virtual void setZeroPositionViaRawAngle(void); // Установить новое начальное положение ZPOS используя нынешнее положение магнита (getRawAngle)
+    virtual bool setZeroPositionViaRawAngleVerify(void); // Тоже самое, но с подтверждением
 	
-    word getMaxPosition(void); // Получить значение конечного положения (конечный угол). 0 - 4095
-    void setMaxPosition(word _max_position); // Установить новое конечное положение MPOS
-    bool setMaxPositionVerify(word _max_position); // Тоже самое, но с подтверждением
-    void setMaxPositionViaRawAngle(void); // Установить новое начальное положение MPOS используя нынешнее положение магнита (getRawAngle)
-    bool setMaxPositionViaRawAngleVerify(void); // Тоже самое, но с подтверждением
+    virtual word getMaxPosition(void); // Получить значение конечного положения (конечный угол). 0 - 4095
+    virtual void setMaxPosition(word _max_position); // Установить новое конечное положение MPOS
+    virtual bool setMaxPositionVerify(word _max_position); // Тоже самое, но с подтверждением
+    virtual void setMaxPositionViaRawAngle(void); // Установить новое начальное положение MPOS используя нынешнее положение магнита (getRawAngle)
+    virtual bool setMaxPositionViaRawAngleVerify(void); // Тоже самое, но с подтверждением
 	
-    word getMaxAngle(void); // Получить значение максимально угла. 0 - 4095
-    void setMaxAngle(word _max_angle); // Установить новое значение максимального угла MANG
-    bool setMaxAngleVerify(word _max_angle); // Тоже самое, но с подтверждением
-    void setMaxAngleViaRawAngle(void); // Установить новое начальное положение MANG используя нынешнее положение магнита (getRawAngle)
-    bool setMaxAngleViaRawAngleVerify(void); // Тоже самое, но с подтверждением
+    virtual word getMaxAngle(void); // Получить значение максимально угла. 0 - 4095
+    virtual void setMaxAngle(word _max_angle); // Установить новое значение максимального угла MANG
+    virtual bool setMaxAngleVerify(word _max_angle); // Тоже самое, но с подтверждением
+    virtual void setMaxAngleViaRawAngle(void); // Установить новое начальное положение MANG используя нынешнее положение магнита (getRawAngle)
+    virtual bool setMaxAngleViaRawAngleVerify(void); // Тоже самое, но с подтверждением
 	
-    word getRawConfigurationValue(void); // Получить "сырые" значения регистра конфигураций CONF. 0 - 4095
-    void setRawConfigurationValue(word _confuration_value); // Установить новые "сырые" значения регистра конфигураций CONF
-    bool setRawConfigurationValueVerify(word _confuration_value); // Тоже самое, но с подтверждением
+    virtual word getRawConfigurationValue(void); // Получить "сырые" значения регистра конфигураций CONF. 0 - 4095
+    virtual void setRawConfigurationValue(word _confuration_value); // Установить новые "сырые" значения регистра конфигураций CONF
+    virtual bool setRawConfigurationValueVerify(word _confuration_value); // Тоже самое, но с подтверждением
     /** Управление Power Mode битами PM **/
-    AS5600PowerModes getPowerMode(void); // Получить текущий режим питания
-    void setPowerMode(AS5600PowerModes _power_mode); // Установить новый режим питания
-    bool setPowerModeVerify(AS5600PowerModes _power_mode); // Тоже самое, но с подтверждением
+    virtual AS5600PowerModes getPowerMode(void); // Получить текущий режим питания
+    virtual void setPowerMode(AS5600PowerModes _power_mode); // Установить новый режим питания
+    virtual bool setPowerModeVerify(AS5600PowerModes _power_mode); // Тоже самое, но с подтверждением
     // Отдельные режимы
-    void enableNomPowerMode(void); // Включить нормальный режим питания
-    bool enableNomPowerModeVerify(void); // Тоже самое, но с подтверждением
-    void enableLowPowerMode1(void); // Включить пониженный режим питания 1
-    bool enableLowPowerMode1Verify(void); // Тоже самое, но с подтверждением
-    void enableLowPowerMode2(void); // Включить пониженный режим питания 2
-    bool enableLowPowerMode2Verify(void); // Тоже самое, но с подтверждением
-    void enableLowPowerMode3(void); // Включить пониженный режим питания 3
-    bool enableLowPowerMode3Verify(void); // Тоже самое, но с подтверждением
+    virtual void enableNomPowerMode(void); // Включить нормальный режим питания
+    virtual bool enableNomPowerModeVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableLowPowerMode1(void); // Включить пониженный режим питания 1
+    virtual bool enableLowPowerMode1Verify(void); // Тоже самое, но с подтверждением
+    virtual void enableLowPowerMode2(void); // Включить пониженный режим питания 2
+    virtual bool enableLowPowerMode2Verify(void); // Тоже самое, но с подтверждением
+    virtual void enableLowPowerMode3(void); // Включить пониженный режим питания 3
+    virtual bool enableLowPowerMode3Verify(void); // Тоже самое, но с подтверждением
     /** Управление Hysteresis битами HYST **/
-    AS5600Hysteresis getHysteresis(void); // Получить параметры гистерезиса
-    void setHysteresis(AS5600Hysteresis _hysteresis); // Установить новые параметры гистерезиса
-    bool setHysteresisVerify(AS5600Hysteresis _hysteresis); // Тоже самое, но с подтверждением
+    virtual AS5600Hysteresis getHysteresis(void); // Получить параметры гистерезиса
+    virtual void setHysteresis(AS5600Hysteresis _hysteresis); // Установить новые параметры гистерезиса
+    virtual bool setHysteresisVerify(AS5600Hysteresis _hysteresis); // Тоже самое, но с подтверждением
     // Отдельные режимы
-    void disableHysteresis(void); // Отключить гистерезис
-    bool disableHysteresisVerify(void); // Тоже самое, но с подтверждением
-    void enableHysteresis1LSB(void); // Включить гистерезис 1 LSB
-    bool enableHysteresis1LSBVerify(void); // Тоже самое, но с подтверждением
-    void enableHysteresis2LSB(void); // Включить гистерезис 2 LSB
-    bool enableHysteresis2LSBVerify(void); // Тоже самое, но с подтверждением
-    void enableHysteresis3LSB(void); // Включить гистерезис 3 LSB
-    bool enableHysteresis3LSBVerify(void); // Тоже самое, но с подтверждением
+    virtual void disableHysteresis(void); // Отключить гистерезис
+    virtual bool disableHysteresisVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableHysteresis1LSB(void); // Включить гистерезис 1 LSB
+    virtual bool enableHysteresis1LSBVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableHysteresis2LSB(void); // Включить гистерезис 2 LSB
+    virtual bool enableHysteresis2LSBVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableHysteresis3LSB(void); // Включить гистерезис 3 LSB
+    virtual bool enableHysteresis3LSBVerify(void); // Тоже самое, но с подтверждением
     /** Управление Output Stage битами OUTS **/
-    AS5600OutputStage getOutputStage(void); // Получить режим работы контакта OUT
-    void setOutputStage(AS5600OutputStage _output_stage); // Установить режим работы контакта OUT
-    bool setOutputStageVerify(AS5600OutputStage _output_stage); // Тоже самое, но с подтверждением
+    virtual AS5600OutputStage getOutputStage(void); // Получить режим работы контакта OUT
+    virtual void setOutputStage(AS5600OutputStage _output_stage); // Установить режим работы контакта OUT
+    virtual bool setOutputStageVerify(AS5600OutputStage _output_stage); // Тоже самое, но с подтверждением
     // Отдельные режимы
-    void enableOutputAnalogFullRange(void); // OUT как аналоговый выход (0 - 100%)
-    bool enableOutputAnalogFullRangeVerify(void); // Тоже самое, но с подтверждением
-    void enableOutputAnalogReducedRange(void); // OUT как аналоговый выход (10 - 90%)
-    bool enableOutputAnalogReducedRangeVerify(void); // Тоже самое, но с подтверждением
-    void enableOutputDigitalPWM(void); // OUT как цифровой ШИМ выход
-    bool enableOutputDigitalPWMVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableOutputAnalogFullRange(void); // OUT как аналоговый выход (0 - 100%)
+    virtual bool enableOutputAnalogFullRangeVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableOutputAnalogReducedRange(void); // OUT как аналоговый выход (10 - 90%)
+    virtual bool enableOutputAnalogReducedRangeVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableOutputDigitalPWM(void); // OUT как цифровой ШИМ выход
+    virtual bool enableOutputDigitalPWMVerify(void); // Тоже самое, но с подтверждением
     /** Управление PWM Frequency битами PWMF **/
-    AS5600PWMFrequency getPWMFrequency(void); // Получить значение частоты ШИМ
-    void setPWMFrequency(AS5600PWMFrequency _pwm_frequency); // Установить новое значение частоты ШИМ
-    bool setPWMFrequencyVerify(AS5600PWMFrequency _pwm_frequency); // Тоже самое, но с подтверждением
+    virtual AS5600PWMFrequency getPWMFrequency(void); // Получить значение частоты ШИМ
+    virtual void setPWMFrequency(AS5600PWMFrequency _pwm_frequency); // Установить новое значение частоты ШИМ
+    virtual bool setPWMFrequencyVerify(AS5600PWMFrequency _pwm_frequency); // Тоже самое, но с подтверждением
     // Отдельные режимы
-    void enablePWMFrequency115Hz(void); // Включить ШИМ 115Гц
-    bool enablePWMFrequency115HzVerify(void); // Тоже самое, но с подтверждением
-    void enablePWMFrequency230Hz(void); // Включить ШИМ 230Гц
-    bool enablePWMFrequency230HzVerify(void); // Тоже самое, но с подтверждением
-    void enablePWMFrequency460Hz(void); // Включить ШИМ 460Гц
-    bool enablePWMFrequency460HzVerify(void); // Тоже самое, но с подтверждением
-    void enablePWMFrequency920Hz(void); // Включить ШИМ 920Гц
-    bool enablePWMFrequency920HzVerify(void); // Тоже самое, но с подтверждением
+    virtual void enablePWMFrequency115Hz(void); // Включить ШИМ 115Гц
+    virtual bool enablePWMFrequency115HzVerify(void); // Тоже самое, но с подтверждением
+    virtual void enablePWMFrequency230Hz(void); // Включить ШИМ 230Гц
+    virtual bool enablePWMFrequency230HzVerify(void); // Тоже самое, но с подтверждением
+    virtual void enablePWMFrequency460Hz(void); // Включить ШИМ 460Гц
+    virtual bool enablePWMFrequency460HzVerify(void); // Тоже самое, но с подтверждением
+    virtual void enablePWMFrequency920Hz(void); // Включить ШИМ 920Гц
+    virtual bool enablePWMFrequency920HzVerify(void); // Тоже самое, но с подтверждением
     /** Управление Slow Filter битами SF **/
-    AS5600SlowFilter getSlowFilter(void); // Получить коэффициент медленной фильтрации
-    void setSlowFilter(AS5600SlowFilter _slow_filter); // Установить новый коэффициент медленной фильтрации
-    bool setSlowFilterVerify(AS5600SlowFilter _slow_filter); // Тоже самое, но с подтверждением
+    virtual AS5600SlowFilter getSlowFilter(void); // Получить коэффициент медленной фильтрации
+    virtual void setSlowFilter(AS5600SlowFilter _slow_filter); // Установить новый коэффициент медленной фильтрации
+    virtual bool setSlowFilterVerify(AS5600SlowFilter _slow_filter); // Тоже самое, но с подтверждением
     // Отдельные режимы
-    void enableSlowFilter16x(void); // Включить коэффициент 16х
-    bool enableSlowFilter16xVerify(void); // Тоже самое, но с подтверждением
-    void enableSlowFilter8x(void); // Включить коэффициент 8х
-    bool enableSlowFilter8xVerify(void); // Тоже самое, но с подтверждением
-    void enableSlowFilter4x(void); // Включить коэффициент 4х
-    bool enableSlowFilter4xVerify(void); // Тоже самое, но с подтверждением
-    void enableSlowFilter2x(void); // Включить коэффициент 2х
-    bool enableSlowFilter2xVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableSlowFilter16x(void); // Включить коэффициент 16х
+    virtual bool enableSlowFilter16xVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableSlowFilter8x(void); // Включить коэффициент 8х
+    virtual bool enableSlowFilter8xVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableSlowFilter4x(void); // Включить коэффициент 4х
+    virtual bool enableSlowFilter4xVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableSlowFilter2x(void); // Включить коэффициент 2х
+    virtual bool enableSlowFilter2xVerify(void); // Тоже самое, но с подтверждением
     /** Управление Fast Filter Threshold битами FTH **/
-    AS5600FastFilterThreshold getFastFilterThreshold(void); // Получить порог быстрой фильтрации
-    void setFastFilterThreshold(AS5600FastFilterThreshold _fast_filter_thredhold); // Установить порог быстрой фильтрации
-    bool setFastFilterThresholdVerify(AS5600FastFilterThreshold _fast_filter_thredhold); // Тоже самое, но с подтверждением
+    virtual AS5600FastFilterThreshold getFastFilterThreshold(void); // Получить порог быстрой фильтрации
+    virtual void setFastFilterThreshold(AS5600FastFilterThreshold _fast_filter_thredhold); // Установить порог быстрой фильтрации
+    virtual bool setFastFilterThresholdVerify(AS5600FastFilterThreshold _fast_filter_thredhold); // Тоже самое, но с подтверждением
     // Отдельные режимы
-    void enableSlowFilterOnly(void); // Включить только медленную фильтрацию
-    bool enableSlowFilterOnlyVerify(void); // Тоже самое, но с подтверждением
-    void enableFastFilterThreshold6LSB(void); // Включить быструю фильтрацию 6 LSB
-    bool enableFastFilterThreshold6LSBVerify(void); // Тоже самое, но с подтверждением
-    void enableFastFilterThreshold7LSB(void); // Включить быструю фильтрацию 7 LSB
-    bool enableFastFilterThreshold7LSBVerify(void); // Тоже самое, но с подтверждением
-    void enableFastFilterThreshold9LSB(void); // Включить быструю фильтрацию 9 LSB
-    bool enableFastFilterThreshold9LSBVerify(void); // Тоже самое, но с подтверждением
-    void enableFastFilterThreshold18LSB(void); // Включить быструю фильтрацию 18 LSB
-    bool enableFastFilterThreshold18LSBVerify(void); // Тоже самое, но с подтверждением
-    void enableFastFilterThreshold21LSB(void); // Включить быструю фильтрацию 21 LSB
-    bool enableFastFilterThreshold21LSBVerify(void); // Тоже самое, но с подтверждением
-    void enableFastFilterThreshold24LSB(void); // Включить быструю фильтрацию 24 LSB
-    bool enableFastFilterThreshold24LSBVerify(void); // Тоже самое, но с подтверждением
-    void enableFastFilterThreshold10LSB(void); // Включить быструю фильтрацию 10 LSB
-    bool enableFastFilterThreshold10LSBVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableSlowFilterOnly(void); // Включить только медленную фильтрацию
+    virtual bool enableSlowFilterOnlyVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableFastFilterThreshold6LSB(void); // Включить быструю фильтрацию 6 LSB
+    virtual bool enableFastFilterThreshold6LSBVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableFastFilterThreshold7LSB(void); // Включить быструю фильтрацию 7 LSB
+    virtual bool enableFastFilterThreshold7LSBVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableFastFilterThreshold9LSB(void); // Включить быструю фильтрацию 9 LSB
+    virtual bool enableFastFilterThreshold9LSBVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableFastFilterThreshold18LSB(void); // Включить быструю фильтрацию 18 LSB
+    virtual bool enableFastFilterThreshold18LSBVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableFastFilterThreshold21LSB(void); // Включить быструю фильтрацию 21 LSB
+    virtual bool enableFastFilterThreshold21LSBVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableFastFilterThreshold24LSB(void); // Включить быструю фильтрацию 24 LSB
+    virtual bool enableFastFilterThreshold24LSBVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableFastFilterThreshold10LSB(void); // Включить быструю фильтрацию 10 LSB
+    virtual bool enableFastFilterThreshold10LSBVerify(void); // Тоже самое, но с подтверждением
     /** Управление Watchdog битом WD **/
-    bool isWatchdog(void); // Определить состояние сторожевого таймера
+    virtual bool isWatchdog(void); // Определить состояние сторожевого таймера
     // Отдельные способы
-    void enableWatchdog(void); // Включить сторожевой таймер
-    bool enableWatchdogVerify(void); // Тоже самое, но с подтверждением
-    void disableWatchdog(void); // Выключить сторожевой таймер
-    bool disableWatchdogVerify(void); // Тоже самое, но с подтверждением
+    virtual void enableWatchdog(void); // Включить сторожевой таймер
+    virtual bool enableWatchdogVerify(void); // Тоже самое, но с подтверждением
+    virtual void disableWatchdog(void); // Выключить сторожевой таймер
+    virtual bool disableWatchdogVerify(void); // Тоже самое, но с подтверждением
     
     /* Output Registers */
-    word getRawAngle(void); // Получить угол в чистом виде. 0 - 4095
-    float getDegreesAngle(void); // Получить угол в градусах. 0.00 - 360.00. Основан на значениях от getRawAngle
-    float getRadiansAngle(void); // Получить угол в радианах 0.00 - 6.29. Основан на значениях от getRawAngle
+    virtual word getRawAngle(void); // Получить угол в чистом виде. 0 - 4095
+    virtual float getDegreesAngle(void); // Получить угол в градусах. 0.00 - 360.00. Основан на значениях от getRawAngle
+    virtual float getRadiansAngle(void); // Получить угол в радианах 0.00 - 6.29. Основан на значениях от getRawAngle
     
-    word getScaledAngle(void); // Получить масштабированный угол с учетом ZPOS, MPOS или MANG. 0 - 4095
+    virtual word getScaledAngle(void); // Получить масштабированный угол с учетом ZPOS, MPOS или MANG. 0 - 4095
 	
     /* Status Registers */
-    AS5600StatusReports getStatus(void); // Получить значение регистра STATUS
-    bool isMagnetDetected(void); // Определить наличие магнита MD
-    bool isMagnetTooWeak(void); // Определить очень слабый магнит ML
-    bool isMagnetTooStrong(void); // Определить очень сильный магнит MH
+    virtual AS5600StatusReports getStatus(void); // Получить значение регистра STATUS
+    virtual bool isMagnetDetected(void); // Определить наличие магнита MD
+    virtual bool isMagnetTooWeak(void); // Определить очень слабый магнит ML
+    virtual bool isMagnetTooStrong(void); // Определить очень сильный магнит MH
 	
-    byte getAutomaticGainControl(void); // Получить значение автоусиления. При VCC = 5В -> 0 - 255, при VCC = 3.3В -> 0 - 128
+    virtual byte getAutomaticGainControl(void); // Получить значение автоусиления. При VCC = 5В -> 0 - 255, при VCC = 3.3В -> 0 - 128
 	
-    word getMagnitude(void); // Получить значение магнитуды. 0 - 4095
+    virtual word getMagnitude(void); // Получить значение магнитуды. 0 - 4095
     
     /* Burn Commands */
-    AS5600BurnReports burnZeroAndMaxPositions(AS5600SpecialVerifyFlags _use_special_verify = AS5600_FLAG_SPECIAL_VERIFY_ENABLE); // Записать навсегда ZPOS, MPOS. CMD_BURN_ANGLE [3 РАЗА МАКСИМУМ!]
+    virtual AS5600BurnReports burnZeroAndMaxPositions(AS5600SpecialVerifyFlags _use_special_verify = AS5600_FLAG_SPECIAL_VERIFY_ENABLE); // Записать навсегда ZPOS, MPOS. CMD_BURN_ANGLE [3 РАЗА МАКСИМУМ!]
     virtual AS5600BurnReports burnMaxAngleAndConfigurationValue(AS5600SpecialVerifyFlags _use_special_verify = AS5600_FLAG_SPECIAL_VERIFY_ENABLE); // Записать навсегда MANG, CONF. CMD_BURN_SETTINGS [1 РАЗ МАКСИМУМ!]
 };

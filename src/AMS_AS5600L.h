@@ -55,22 +55,22 @@ class AS5600L : public AS5600 {
 	
     bool isConnected(void) override; // Проверка по стандартному алгоритму поиска устройств на шине I2C
 
-    byte findDevice(void); // Получить первый доступный адрес на шине I2C. Адрес в конструкторе и методах работы с адресами не нужен
+    virtual byte findDevice(void); // Получить первый доступный адрес на шине I2C. Адрес в конструкторе и методах работы с адресами не нужен
 	
     /* Configuration Registers */
     /** Управление регистром I2C адреса I2CADDR **/
-    byte getRegisterAddressI2C(void); // Получить значение I2C адреса из регистра I2CADDR
-    void setRegisterAddressI2C(byte _new_i2c_address); // Установить новое значение I2C адреса в регистр I2CADDR
-    bool setRegisterAddressI2CVerify(byte _new_i2c_address); // Тоже самое, но с подтверждением
+    virtual byte getRegisterAddressI2C(void); // Получить значение I2C адреса из регистра I2CADDR
+    virtual void setRegisterAddressI2C(byte _new_i2c_address); // Установить новое значение I2C адреса в регистр I2CADDR
+    virtual bool setRegisterAddressI2CVerify(byte _new_i2c_address); // Тоже самое, но с подтверждением
     /** Управление регистром I2C адреса I2CUPDT (I2CSTRB) **/
-    byte getRegisterUpdateI2C(void); // Получить значение I2C адреса из регистра I2CUPDT (I2CSTRB)
-    void setRegisterUpdateI2C(byte _new_i2c_address); // Установить новое значение I2C адреса в регистр I2CUPDT (I2CSTRB)
-    bool setRegisterUpdateI2CVerify(byte _new_i2c_address); // Тоже самое, но с подтверждением
+    virtual byte getRegisterUpdateI2C(void); // Получить значение I2C адреса из регистра I2CUPDT (I2CSTRB)
+    virtual void setRegisterUpdateI2C(byte _new_i2c_address); // Установить новое значение I2C адреса в регистр I2CUPDT (I2CSTRB)
+    virtual bool setRegisterUpdateI2CVerify(byte _new_i2c_address); // Тоже самое, но с подтверждением
 	
     // Установка и получение I2C адреса датчика
-    byte getAddressI2C(void); // Получить нынешнее значение адреса датчика на шине I2C
-    void setAddressI2C(byte _new_i2c_address); // Установить новое значение адреса датчика на шине I2C
-    bool setAddressI2CVerify(byte _new_i2c_address); // Тоже самое, но с подтверждением
+    virtual byte getAddressI2C(void); // Получить нынешнее значение адреса датчика на шине I2C
+    virtual void setAddressI2C(byte _new_i2c_address); // Установить новое значение адреса датчика на шине I2C
+    virtual bool setAddressI2CVerify(byte _new_i2c_address); // Тоже самое, но с подтверждением
 
     /* Burn Command */
     AS5600BurnReports burnMaxAngleAndConfigurationValue(AS5600SpecialVerifyFlags _use_special_verify = AS5600_FLAG_SPECIAL_VERIFY_ENABLE) override; // Записать навсегда MANG, CONF, I2CADDR. CMD_BURN_SETTINGS [1 РАЗ МАКСИМУМ!]
