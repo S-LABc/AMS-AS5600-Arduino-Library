@@ -14,7 +14,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.9 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2022. v2.0 / License MIT / Скляр Роман S-LAB
  */
 
 #include "AMS_AS5600.h"
@@ -1270,7 +1270,8 @@ AS5600StatusReports AS5600::getStatus(void) {
  *  AS5600_DEFAULT_REPORT_OK - магнит обнаружен
  */
 bool AS5600::isMagnetDetected(void) {
-  return (bool)((getStatus() >> AS5600_STATUS_BIT_MD_5) & 0x01);
+  AS_SendFirstRegister(AS5600_STATUS_REG);
+  return (bool)((AS_RequestSingleRegister() >> AS5600_STATUS_BIT_MD_5) & 0x01);
 }
 /*
  * @brief: определить слишком слабый магнит. регистр STATUS (ML:4)
@@ -1279,7 +1280,8 @@ bool AS5600::isMagnetDetected(void) {
  *  AS5600_DEFAULT_REPORT_OK - магнит слишком слабый
  */
 bool AS5600::isMagnetTooWeak(void) {
-  return (bool)((getStatus() >> AS5600_STATUS_BIT_ML_4) & 0x01);
+  AS_SendFirstRegister(AS5600_STATUS_REG);
+  return (bool)((AS_RequestSingleRegister() >> AS5600_STATUS_BIT_ML_4) & 0x01);
 }
 /*
  * @brief: определить слишком сильный магнит. регистр STATUS (MH:3)
@@ -1288,7 +1290,8 @@ bool AS5600::isMagnetTooWeak(void) {
  *  AS5600_DEFAULT_REPORT_OK - магнит слишком сильный
  */
 bool AS5600::isMagnetTooStrong(void) {
-  return (bool)((getStatus() >> AS5600_STATUS_BIT_MH_3) & 0x01);
+  AS_SendFirstRegister(AS5600_STATUS_REG);
+  return (bool)((AS_RequestSingleRegister() >> AS5600_STATUS_BIT_MH_3) & 0x01);
 }
 /*
  * @brief: получить значение автоматического усиления из регистра AGC(7:0)
