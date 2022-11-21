@@ -14,7 +14,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.8 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.9 / License MIT / Скляр Роман S-LAB
  */
 
 #pragma once
