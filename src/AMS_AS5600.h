@@ -209,9 +209,6 @@ class AS5600 {
     virtual void begin(int8_t _sda_pin, int8_t _scl_pin); // Вызов Wire.begin(SDA, SCL) с указанием выводов
 #endif
     virtual void setClock(uint32_t _freq_hz = AS5600_I2C_CLOCK_400KHZ); // Настройка частоты на 100кГц, 400кГц, 1МГц, или пользовательское значение (по умолчанию 400кГц)
-#if !defined(ESP8266)
-    virtual void end(void); // Вызов Wire.end()
-#endif
 	
     virtual void loadSavedValues(void); // Метод производителя для загрузки значений из памяти в регистры ZPOS, MPOS, MANG, CONF
 	

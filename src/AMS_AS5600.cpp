@@ -141,14 +141,6 @@ void AS5600::begin(int8_t _sda_pin, int8_t _scl_pin) {
 void AS5600::setClock(uint32_t _freq_hz) {
   _wire_->setClock(_freq_hz);
 }
-/* 
- * @brief: отключение шины I2C
- */
-#if !defined(ESP8266)
-void AS5600::end(void) {
-  _wire_->end();
-}
-#endif
 /*
  * @brief: загружает данные из энергонезависимой памяти датчика в регистры ZPOS(11:0), MPOS(11:0), MANG(11:0), CONF(13:0)
  *  если были установлены какие-либо значения в эти регистры то, они будут заменены значениями из энергонезависимой памяти
