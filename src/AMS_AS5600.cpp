@@ -1227,7 +1227,7 @@ float AS5600::getDegreesAngle(void) {
  *  0.00 - 6.29
  */
 float AS5600::getRadiansAngle(void) {
-  return (getDegreesAngle() * M_PI) / 180;
+  return (getDegreesAngle() * PI) / 180;
 }
 /* 
  * @brief: получить масштабированное значение угла из регистра ANGLE(11:0)
