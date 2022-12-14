@@ -41,12 +41,13 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.0 / Скляр Роман S-LAB
+ * Copyright (C) 2022. v1.1 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеку
 #include <AMS_AS5600.h>
 
+// УКАЖИТЕ ТУТ СВОИ ЗНАЧЕНИЯ УГЛОВ
 #define Z_POS 800
 #define M_POS 3469
 
