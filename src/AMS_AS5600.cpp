@@ -1364,8 +1364,10 @@ AS5600BurnReports AS5600::burnZeroAndMaxPositions(AS5600SpecialVerifyFlags _use_
 }
 /* 
  * @brief: записать НАВСЕГДА установленные значения в регистрах MANG(11:0) и CONF(13:0)
- * @note: ВЫПОЛНИТЬ ЭТУ КОМАНДУ МОЖНО ТОЛЬКО 1(ОДИН) РАЗ ДЛЯ ОДНОГО ДАТЧИКА 
- *  ПРИ НАЛИЧИИ МАГНИТА (MD:5 = 1) И ПРИ НАЛИЧИИ РЕСУРСА В ZMCO(1:0)!
+ * @note: ВЫПОЛНИТЬ ЭТУ КОМАНДУ МОЖНО ТОЛЬКО 1(ОДИН) РАЗ ДЛЯ ОДНОГО ДАТЧИКА
+ *  ПРИ НАЛИЧИИ МАГНИТА (MD:5 = 1)!  TCKB ZMCO = 0 ЗАПИСАТЬ МОЖНО КОНФИГУРАЦИИ И МАКСИМАЛЬНЫЙ УГОЛ,
+ *  ЕСЛИ ZMCO > 0 ЗПИСАТЬ МОЖНО ТОЛЬКО КОНФИГУРАЦИИ БЕЗ МАКСИМАЛЬНОГО УГЛА
+ *  
  * @param _use_special_verify:
  *  AS5600_FLAG_SPECIAL_VERIFY_DISABLE
  *  AS5600_FLAG_SPECIAL_VERIFY_ENABLE
@@ -1376,7 +1378,8 @@ AS5600BurnReports AS5600::burnZeroAndMaxPositions(AS5600SpecialVerifyFlags _use_
  *  AS5600_BURN_REPROT_WRITE_WRONG
  *  AS5600_BURN_REPROT_WRITE_OK_WITHOUT_VERIFY
  *  AS5600_BURN_REPROT_ANGLE_VALUE_TOO_SMALL
- *  AS5600_BURN_REPROT_ATTEMPTS_ENDED
+ *  AS5600_BURN_REPROT_WRITE_OK_WITHOUT_MAXANGLE
+ *  AS5600_BURN_REPROT_WRITE_OK_WITHOUT_VERIFY_WITHOUT_MAXANGLE
  */
 AS5600BurnReports AS5600::burnMaxAngleAndConfigurationValue(AS5600SpecialVerifyFlags _use_special_verify) {
   AS5600BurnReports result = AS5600_BURN_REPROT_SENSOR_NOT_CONNECTED;
@@ -1410,8 +1413,25 @@ AS5600BurnReports AS5600::burnMaxAngleAndConfigurationValue(AS5600SpecialVerifyF
       } else {
         result = AS5600_BURN_REPROT_ANGLE_VALUE_TOO_SMALL;
       }
-    } else {
-      result = AS5600_BURN_REPROT_ATTEMPTS_ENDED;
+    } else { // Если ZMCO > 0, то записать можно только КОНФИГУРАЦИИ без МАКСИМАЛЬНОГО угла
+      // Наличие магнита проверяем НА ПОСЛЕДНЕМ ШАГЕ, перед отправлением команды на запись!
+      if (isMagnetDetected()) { // Если магнит обнаружен
+        AS_WriteOneByte(AS5600_BURN_REG, AS5600_CMD_BURN_SETTINGS); // Отправляем команду записи настроек
+        if (_use_special_verify) { // Если используется проверка записанного
+          loadSavedValues(); // Загружаем из памяти ранее записанные данные
+          // Получаем загруженные данные для сравнения
+          word conf_now = getRawConfigurationValue();
+          if (conf == conf_now) { // Если записываемые данные совпадают с сохраненными
+            result = AS5600_BURN_REPROT_WRITE_OK_WITHOUT_MAXANGLE;
+          } else {
+            result = AS5600_BURN_REPROT_WRITE_WRONG;
+          }
+        } else {
+          result = AS5600_BURN_REPROT_WRITE_OK_WITHOUT_VERIFY_WITHOUT_MAXANGLE;
+        }
+      } else {
+        result = AS5600_BURN_REPROT_MAGNET_NOT_FOUND;
+      }
     }
   }
 
