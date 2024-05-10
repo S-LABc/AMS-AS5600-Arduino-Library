@@ -135,6 +135,20 @@ void AS5600::begin(int8_t _sda_pin, int8_t _scl_pin) {
 }
 #endif
 /* 
+ * @brief: вызов методов Wire.setSDA(SDA) Wire.setSCL(SCL) Wire.begin()
+ * @param _sda_pin: пользовательский контакт SDA
+ * @param _scl_pin: пользовательский контакт SCL
+ * @note: использовать, если действие не было выполнено ранее.
+ *   Применимо для платформы STM32
+ */
+#if defined(ARDUINO_ARCH_STM32)
+void AS5600::begin(int8_t _sda_pin, int8_t _scl_pin) {
+  _wire_->setSDA(_sda_pin);
+  _wire_->setSCL(_scl_pin);
+  _wire_->begin();
+}
+#endif
+/* 
  * @brief: настройка частоты шины I2C
  * @note: использовать, если частота шины меняется из-за разных устройств. по умолчанию 400кГц
  */
