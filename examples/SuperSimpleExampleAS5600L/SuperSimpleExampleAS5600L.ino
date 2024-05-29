@@ -23,7 +23,7 @@
  *    а вывод VCC подкючить к 5В питанию!
  * 
  * Документация к датчику:
- * https://ams.com/documents/20143/36005/AS5600L_DS000545_3-00.pdf
+ * https://look.ams-osram.com/m/657fca3b775890b7/original/AS5600L-DS000545.pdf
  *
  * Больше информации в WiKi:
  * https://github.com/S-LABc/AMS-AS5600-Arduino-Library/wiki
@@ -32,7 +32,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.0 / Скляр Роман S-LAB
+ * Copyright (C) 2024. v1.1 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеку
@@ -55,5 +55,13 @@ void loop() {
   Serial.print("Угол в градусах: ");
   // Выводим значения в градусах (от 0 до 360)
   Serial.println(Sensor.getDegreesAngle());
+
+  /*
+  // Или через ссылку
+  float degrees_ang = 0;
+  Sensor.getDegreesAngle(degrees_ang);
+  Serial.print("Угол в градусах: ");
+  Serial.println(degrees_ang);
+  */
   delay(500);
 }

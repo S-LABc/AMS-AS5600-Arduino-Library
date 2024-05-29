@@ -22,7 +22,7 @@
  * Скетч использует ядро arduino-esp32
  * 
  * Документация к датчику:
- * https://ams.com/documents/20143/36005/AS5600_DS000365_5-00.pdf
+ * https://look.ams-osram.com/m/7059eac7531a86fd/original/AS5600-DS000365.pdf
  * 
  * Зависимости:
  * https://github.com/espressif/arduino-esp32
@@ -34,7 +34,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.1 / Скляр Роман S-LAB
+ * Copyright (C) 2024. v1.2 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеку

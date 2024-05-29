@@ -23,7 +23,7 @@
  *    а вывод VCC подкючить к 5В питанию!
  * 
  * Документация к датчику:
- * https://ams.com/documents/20143/36005/AS5600_DS000365_5-00.pdf
+ * https://look.ams-osram.com/m/7059eac7531a86fd/original/AS5600-DS000365.pdf
  *
  * Больше информации в WiKi:
  * https://github.com/S-LABc/AMS-AS5600-Arduino-Library/wiki
@@ -32,7 +32,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.2 / Скляр Роман S-LAB
+ * Copyright (C) 2024. v1.3 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеку
@@ -77,6 +77,11 @@ void setup() {
 void loop() {
   // Получаем значения АЦП для полного круга
   uint16_t raw = Sensor.getRawAngle();
+  /*
+  // Или через ссылку
+  word raw = 0;
+  Sensor.getRawAngle(raw);
+  */
   
   // Выводим "сырые" значения (от 0 до 4095)
   Serial.print("Угол в АЦП: ");

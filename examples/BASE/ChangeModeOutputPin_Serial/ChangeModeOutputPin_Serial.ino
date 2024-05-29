@@ -29,7 +29,7 @@
  *    контакте OUT датчика
  * 
  * Документация к датчику:
- * https://ams.com/documents/20143/36005/AS5600_DS000365_5-00.pdf
+ * https://look.ams-osram.com/m/7059eac7531a86fd/original/AS5600-DS000365.pdf
  *
  * Больше информации в WiKi:
  * https://github.com/S-LABc/AMS-AS5600-Arduino-Library/wiki
@@ -38,7 +38,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.2 / Скляр Роман S-LAB
+ * Copyright (C) 2024. v1.3 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеку
@@ -85,6 +85,7 @@ void loop() {
  * Все методы управления контактом OUT
  * 
  * AS5600OutputStage getOutputStage(); // Получить режим работы контакта OUT
+ * void getOutputStage(AS5600OutputStage &_output_stage); // Тоже самое, но через ссылку
  * void setOutputStage(AS5600OutputStage _output_stage); // Установить режим работы контакта OUT
  * bool setOutputStageVerify(AS5600OutputStage _output_stage); // с подтверждением
  * 

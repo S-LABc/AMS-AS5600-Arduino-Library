@@ -24,7 +24,7 @@
  * 4. Приближать и отдалять магнит
  * 
  * Документация к датчику:
- * https://ams.com/documents/20143/36005/AS5600_DS000365_5-00.pdf
+ * https://look.ams-osram.com/m/7059eac7531a86fd/original/AS5600-DS000365.pdf
  *
  * Больше информации в WiKi:
  * https://github.com/S-LABc/AMS-AS5600-Arduino-Library/wiki
@@ -33,7 +33,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.2 / Скляр Роман S-LAB
+ * Copyright (C) 2024. v1.3 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеку
@@ -60,6 +60,18 @@ void loop() {
   Serial.println(Sensor.getMagnitude()); // Значение магнитуды
   Serial.print("Автоусиление: ");
   Serial.println(Sensor.getAutomaticGainControl()); // Значение автоусиления AGC. При VCC = 5В -> 0 - 255, при VCC = 3.3В -> 0 - 128
+
+  /*
+  // Или через ссылку
+  word magnitude = 0;
+  byte agc = 0;
+  Sensor.getMagnitude(magnitude);
+  Sensor.getAutomaticGainControl(agc);
+  Serial.print("Магнитуда: ");
+  Serial.println(magnitude);
+  Serial.print("Автоусиление: ");
+  Serial.println(agc);
+  */
   
   Serial.println();
   delay(50);

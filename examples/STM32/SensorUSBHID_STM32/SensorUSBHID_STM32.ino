@@ -31,8 +31,8 @@
  * https://github.com/arpruss/USBComposite_stm32f1
  * 
  * Документация к датчику:
- * AS5600  https://ams.com/documents/20143/36005/AS5600_DS000365_5-00.pdf
- * AS5600L https://ams.com/documents/20143/36005/AS5600L_DS000545_3-00.pdf
+ * AS5600  https://look.ams-osram.com/m/7059eac7531a86fd/original/AS5600-DS000365.pdf
+ * AS5600L https://look.ams-osram.com/m/657fca3b775890b7/original/AS5600L-DS000545.pdf
  *
  * Больше информации в WiKi:
  * https://github.com/S-LABc/AMS-AS5600-Arduino-Library/wiki
@@ -41,7 +41,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.0 / Скляр Роман S-LAB
+ * Copyright (C) 2024. v1.1 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеки

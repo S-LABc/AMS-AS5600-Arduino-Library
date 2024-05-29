@@ -28,7 +28,7 @@
  *    а вывод VCC подкючить к 5В питанию!
  * 
  * Документация к датчику:
- * https://ams.com/documents/20143/36005/AS5600_DS000365_5-00.pdf
+ * https://look.ams-osram.com/m/7059eac7531a86fd/original/AS5600-DS000365.pdf
  *
  * Больше информации в WiKi:
  * https://github.com/S-LABc/AMS-AS5600-Arduino-Library/wiki
@@ -37,7 +37,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.2 / Скляр Роман S-LAB
+ * Copyright (C) 2024. v1.3 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеку
@@ -91,6 +91,22 @@ void loop() {
   // Выводим значения в радианах (от 0.00 - 6.29)
   Serial.print("Угол в радианах: ");
   Serial.println(Sensor.getRadiansAngle()); // DegreesAngle*pi/180
+
+  /*
+  // Или через ссылку
+  word raw_ang = 0;
+  float degrees_ang = 0;
+  float radians_ang = 0;
+  Sensor.getRawAngle(raw_ang);
+  Sensor.getDegreesAngle(degrees_ang);
+  Sensor.getRadiansAngle(radians_ang);
+  Serial.print("Угол в АЦП: ");
+  Serial.println(raw_ang);
+  Serial.print("Угол в градусах: ");
+  Serial.println(degrees_ang);
+  Serial.print("Угол в радианах: ");
+  Serial.println(radians_ang);
+  */
 
   // Разделение и задержка для удобства наблюдения
   Serial.println();

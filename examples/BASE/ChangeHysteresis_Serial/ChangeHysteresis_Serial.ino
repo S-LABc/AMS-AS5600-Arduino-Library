@@ -24,7 +24,7 @@
  * 4. Отправлять 0, 1, 2 или 3
  * 
  * Документация к датчику:
- * https://ams.com/documents/20143/36005/AS5600_DS000365_5-00.pdf
+ * https://look.ams-osram.com/m/7059eac7531a86fd/original/AS5600-DS000365.pdf
  *
  * Больше информации в WiKi:
  * https://github.com/S-LABc/AMS-AS5600-Arduino-Library/wiki
@@ -33,7 +33,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.1 / Скляр Роман S-LAB
+ * Copyright (C) 2024. v1.2 / Скляр Роман S-LAB
  */
 
 // Подключаем библиотеку
@@ -82,6 +82,7 @@ void loop() {
 /*
  * Другие методы:
  * AS5600Hysteresis getHysteresis(); // Получить параметры гистерезиса
+ * void getHysteresis(AS5600Hysteresis &_hysteresis); // Тоже самое, но через ссылку
  * void setHysteresis(_hysteresis); // Установить новые параметры гистерезиса
  * bool setHysteresisVerify(_hysteresis); // с подтверждением
  * 
