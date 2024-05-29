@@ -1,11 +1,11 @@
 /* 
  * Класс для Arduino IDE реализующий множество методов
  * взаимодействия с бесконтактным датчиком положения
- * AS5600 от компании AMS https://ams.com/ams-start
+ * AS5600 от компании AMS https://ams-osram.com/
  * 
  * Документация к датчику:
- ** https://ams.com/documents/20143/36005/AS5600_DS000365_5-00.pdf
- ** https://ams.com/en/as5600
+ ** https://look.ams-osram.com/m/7059eac7531a86fd/original/AS5600-DS000365.pdf
+ ** https://ams-osram.com/products/sensors/position-sensors/ams-as5600-position-sensor
  *
  * Больше информации в WiKi:
  * https://github.com/S-LABc/AMS-AS5600-Arduino-Library/wiki
@@ -14,7 +14,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.9 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2024. v2.0 / License MIT / Скляр Роман S-LAB
  */
 
 #pragma once
@@ -32,6 +32,9 @@ const uint8_t AS5600_I2C_ADDRESS       = 0x36;
 #define ESP8266_AS5600_DEF_PIN 2
 #define ESP32_AS5600_DEF_PIN   4
 #define ARDUINO_AS5600_DEF_PIN 3
+
+// Количество регистров в памяти датчика для чтения
+const uint8_t AS5600_REGISTER_MAP_SIZE = 0x12;
 
 /*=== Адреса регистров датчика ===*/
 /* Configuration Registers */
@@ -210,11 +213,14 @@ class AS5600 {
 #if defined(ESP8266) || defined(ESP32) || defined(ARDUINO_ARCH_STM32)
     virtual void begin(int8_t _sda_pin, int8_t _scl_pin); // Вызов Wire.begin(SDA, SCL) с указанием выводов
 #endif
+
     virtual void setClock(uint32_t _freq_hz = AS5600_I2C_CLOCK_400KHZ); // Настройка частоты на 100кГц, 400кГц, 1МГц, или пользовательское значение (по умолчанию 400кГц)
 	
     virtual void loadSavedValues(void); // Метод производителя для загрузки значений из памяти в регистры ZPOS, MPOS, MANG, CONF
 	
     virtual bool isConnected(void); // Проверка по стандартному алгоритму поиска устройств на шине I2C
+
+    virtual bool getAllRegisters(byte *_registers, byte _array_size); // Получить значения всех регистров датчика в виде массива из 18 байт через ссылку
 	
     /* Виртуальная кнопка */
     /** Настройки **/
@@ -237,30 +243,36 @@ class AS5600 {
 	
     /* Configuration Registers */
     virtual byte getBurnPositionsCount(void); // Получить количество записей значений в ZPOS и MPOS (с завода ZMCO = 00). 0 - 3
+    virtual void getBurnPositionsCount(byte &_burn_positions_count); // Тоже самое, но через ссылку
 	
     virtual word getZeroPosition(void); // Получить значение начального положения (начальный угол). 0 - 4095
+    virtual void getZeroPosition(word &_zero_position); // Тоже самое, но через ссылку
     virtual void setZeroPosition(word _zero_position); // Установить новое начальное положение ZPOS
     virtual bool setZeroPositionVerify(word _zero_position); // Тоже самое, но с подтверждением
     virtual void setZeroPositionViaRawAngle(void); // Установить новое начальное положение ZPOS используя нынешнее положение магнита (getRawAngle)
     virtual bool setZeroPositionViaRawAngleVerify(void); // Тоже самое, но с подтверждением
 	
     virtual word getMaxPosition(void); // Получить значение конечного положения (конечный угол). 0 - 4095
+    virtual void getMaxPosition(word &_max_position); // Тоже самое, но через ссылку
     virtual void setMaxPosition(word _max_position); // Установить новое конечное положение MPOS
     virtual bool setMaxPositionVerify(word _max_position); // Тоже самое, но с подтверждением
     virtual void setMaxPositionViaRawAngle(void); // Установить новое начальное положение MPOS используя нынешнее положение магнита (getRawAngle)
     virtual bool setMaxPositionViaRawAngleVerify(void); // Тоже самое, но с подтверждением
 	
     virtual word getMaxAngle(void); // Получить значение максимально угла. 0 - 4095
+    virtual void getMaxAngle(word &_max_angle); // Тоже самое, но через ссылку
     virtual void setMaxAngle(word _max_angle); // Установить новое значение максимального угла MANG
     virtual bool setMaxAngleVerify(word _max_angle); // Тоже самое, но с подтверждением
     virtual void setMaxAngleViaRawAngle(void); // Установить новое начальное положение MANG используя нынешнее положение магнита (getRawAngle)
     virtual bool setMaxAngleViaRawAngleVerify(void); // Тоже самое, но с подтверждением
 	
     virtual word getRawConfigurationValue(void); // Получить "сырые" значения регистра конфигураций CONF. 0 - 4095
+    virtual void getRawConfigurationValue(word &_confuration_value); // Тоже самое, но через ссылку
     virtual void setRawConfigurationValue(word _confuration_value); // Установить новые "сырые" значения регистра конфигураций CONF
     virtual bool setRawConfigurationValueVerify(word _confuration_value); // Тоже самое, но с подтверждением
     /** Управление Power Mode битами PM **/
     virtual AS5600PowerModes getPowerMode(void); // Получить текущий режим питания
+    virtual void getPowerMode(AS5600PowerModes &_power_mode); // Тоже самое, но через ссылку
     virtual void setPowerMode(AS5600PowerModes _power_mode); // Установить новый режим питания
     virtual bool setPowerModeVerify(AS5600PowerModes _power_mode); // Тоже самое, но с подтверждением
     // Отдельные режимы
@@ -274,6 +286,7 @@ class AS5600 {
     virtual bool enableLowPowerMode3Verify(void); // Тоже самое, но с подтверждением
     /** Управление Hysteresis битами HYST **/
     virtual AS5600Hysteresis getHysteresis(void); // Получить параметры гистерезиса
+    virtual void getHysteresis(AS5600Hysteresis &_hysteresis); // Тоже самое, но через ссылку
     virtual void setHysteresis(AS5600Hysteresis _hysteresis); // Установить новые параметры гистерезиса
     virtual bool setHysteresisVerify(AS5600Hysteresis _hysteresis); // Тоже самое, но с подтверждением
     // Отдельные режимы
@@ -287,6 +300,7 @@ class AS5600 {
     virtual bool enableHysteresis3LSBVerify(void); // Тоже самое, но с подтверждением
     /** Управление Output Stage битами OUTS **/
     virtual AS5600OutputStage getOutputStage(void); // Получить режим работы контакта OUT
+    virtual void getOutputStage(AS5600OutputStage &_output_stage); // Тоже самое, но через ссылку
     virtual void setOutputStage(AS5600OutputStage _output_stage); // Установить режим работы контакта OUT
     virtual bool setOutputStageVerify(AS5600OutputStage _output_stage); // Тоже самое, но с подтверждением
     // Отдельные режимы
@@ -298,6 +312,7 @@ class AS5600 {
     virtual bool enableOutputDigitalPWMVerify(void); // Тоже самое, но с подтверждением
     /** Управление PWM Frequency битами PWMF **/
     virtual AS5600PWMFrequency getPWMFrequency(void); // Получить значение частоты ШИМ
+    virtual void getPWMFrequency(AS5600PWMFrequency &_pwm_frequency); // Тоже самое, но через ссылку
     virtual void setPWMFrequency(AS5600PWMFrequency _pwm_frequency); // Установить новое значение частоты ШИМ
     virtual bool setPWMFrequencyVerify(AS5600PWMFrequency _pwm_frequency); // Тоже самое, но с подтверждением
     // Отдельные режимы
@@ -311,6 +326,7 @@ class AS5600 {
     virtual bool enablePWMFrequency920HzVerify(void); // Тоже самое, но с подтверждением
     /** Управление Slow Filter битами SF **/
     virtual AS5600SlowFilter getSlowFilter(void); // Получить коэффициент медленной фильтрации
+    virtual void getSlowFilter(AS5600SlowFilter &_slow_filter); // Тоже самое, но через ссылку
     virtual void setSlowFilter(AS5600SlowFilter _slow_filter); // Установить новый коэффициент медленной фильтрации
     virtual bool setSlowFilterVerify(AS5600SlowFilter _slow_filter); // Тоже самое, но с подтверждением
     // Отдельные режимы
@@ -324,6 +340,7 @@ class AS5600 {
     virtual bool enableSlowFilter2xVerify(void); // Тоже самое, но с подтверждением
     /** Управление Fast Filter Threshold битами FTH **/
     virtual AS5600FastFilterThreshold getFastFilterThreshold(void); // Получить порог быстрой фильтрации
+    virtual void getFastFilterThreshold(AS5600FastFilterThreshold &_fast_filter_thredhold); // Тоже самое, но через ссылку
     virtual void setFastFilterThreshold(AS5600FastFilterThreshold _fast_filter_thredhold); // Установить порог быстрой фильтрации
     virtual bool setFastFilterThresholdVerify(AS5600FastFilterThreshold _fast_filter_thredhold); // Тоже самое, но с подтверждением
     // Отдельные режимы
@@ -353,20 +370,27 @@ class AS5600 {
     
     /* Output Registers */
     virtual word getRawAngle(void); // Получить угол в чистом виде. 0 - 4095
+    virtual void getRawAngle(word &_raw_angle); // Тоже самое, но через ссылку
     virtual float getDegreesAngle(void); // Получить угол в градусах. 0.00 - 360.00. Основан на значениях от getRawAngle
-    virtual float getRadiansAngle(void); // Получить угол в радианах 0.00 - 6.29. Основан на значениях от getRawAngle
+    virtual void getDegreesAngle(float &_degrees_angle); // Тоже самое, но через ссылку
+    virtual float getRadiansAngle(void); // Получить угол в радианах 0.00 - 6.28. Основан на значениях от getRawAngle
+    virtual void getRadiansAngle(float &_radians_angle); // Тоже самое, но через ссылку
     
     virtual word getScaledAngle(void); // Получить масштабированный угол с учетом ZPOS, MPOS или MANG. 0 - 4095
+    virtual void getScaledAngle(word &_scaled_angle); // Тоже самое, но через ссылку
 	
     /* Status Registers */
     virtual AS5600StatusReports getStatus(void); // Получить значение регистра STATUS
+    virtual void getStatus(AS5600StatusReports &_status); // Тоже самое, но через ссылку
     virtual bool isMagnetDetected(void); // Определить наличие магнита MD
     virtual bool isMagnetTooWeak(void); // Определить очень слабый магнит ML
     virtual bool isMagnetTooStrong(void); // Определить очень сильный магнит MH
 	
     virtual byte getAutomaticGainControl(void); // Получить значение автоусиления. При VCC = 5В -> 0 - 255, при VCC = 3.3В -> 0 - 128
+    virtual void getAutomaticGainControl(byte &_agc); // Тоже самое, но через ссылку
 	
     virtual word getMagnitude(void); // Получить значение магнитуды. 0 - 4095
+    virtual void getMagnitude(word &_magnitude); // Тоже самое, но через ссылку
     
     /* Burn Commands */
     virtual AS5600BurnReports burnZeroAndMaxPositions(AS5600SpecialVerifyFlags _use_special_verify = AS5600_FLAG_SPECIAL_VERIFY_ENABLE); // Записать навсегда ZPOS, MPOS. CMD_BURN_ANGLE [3 РАЗА МАКСИМУМ!]

@@ -1,11 +1,11 @@
 /* 
  * Класс для Arduino IDE реализующий множество методов
  * взаимодействия с бесконтактным датчиком положения
- * AS5600 от компании AMS https://ams.com/ams-start
+ * AS5600 от компании AMS https://ams-osram.com/
  * 
  * Документация к датчику:
- ** https://ams.com/documents/20143/36005/AS5600_DS000365_5-00.pdf
- ** https://ams.com/en/as5600
+ ** https://look.ams-osram.com/m/7059eac7531a86fd/original/AS5600-DS000365.pdf
+ ** https://ams-osram.com/products/sensors/position-sensors/ams-as5600-position-sensor
  *
  * Больше информации в WiKi:
  * https://github.com/S-LABc/AMS-AS5600-Arduino-Library/wiki
@@ -14,7 +14,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v2.2 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2024. v2.3 / License MIT / Скляр Роман S-LAB
  */
 
 #include "AMS_AS5600.h"
@@ -200,6 +200,92 @@ bool AS5600::isConnected(void) {
   return (!_wire_->endTransmission(AS5600_I2C_ADDRESS)) ? AS5600_DEFAULT_REPORT_OK : AS5600_DEFAULT_REPORT_ERROR;
 }
 /*
+ * @brief: получить значения всех регистров датчика
+ * @note: 
+ */
+bool AS5600::getAllRegisters(byte *_registers, byte _array_size) {
+  // Проверка на размер массива
+  if (_array_size < AS5600_REGISTER_MAP_SIZE) {
+    return AS5600_DEFAULT_REPORT_ERROR;
+  }
+
+  // Начать передачу по адресу
+  _wire_->beginTransmission(AS5600_I2C_ADDRESS);
+  // Отправить адрес регистра 0x00
+  _wire_->write(AS5600_CONFIG_REG_ZMCO);
+  // Завершить соединение
+  _wire_->endTransmission();
+  // Запросить 9 байт данных по адресу
+  _wire_->requestFrom(AS5600_I2C_ADDRESS, (uint8_t)9);
+  // Прочитать данные из буфера
+  if (_wire_->available() >= 1 ) {
+    _registers[0] = _wire_->read(); // AS5600_CONFIG_REG_ZMCO (0x00)
+    _registers[1] = _wire_->read(); // AS5600_CONFIG_REG_ZPOS_H (0x01)
+    _registers[2] = _wire_->read(); // AS5600_CONFIG_REG_ZPOS_L (0x02)
+    _registers[3] = _wire_->read(); // AS5600_CONFIG_REG_MPOS_H (0x03)
+    _registers[4] = _wire_->read(); // AS5600_CONFIG_REG_MPOS_L (0x04)
+    _registers[5] = _wire_->read(); // AS5600_CONFIG_REG_MANG_H (0x05)
+    _registers[6] = _wire_->read(); // AS5600_CONFIG_REG_MANG_L (0x06)
+    _registers[7] = _wire_->read(); // AS5600_CONFIG_REG_CONF_H (0x07)
+    _registers[8] = _wire_->read(); // AS5600_CONFIG_REG_CONF_L (0x08)
+  }
+  // Завершить соединение
+  _wire_->endTransmission();
+
+  // Начать передачу по адресу
+  _wire_->beginTransmission(AS5600_I2C_ADDRESS);
+  // Отправить адрес регистра 0x0B
+  _wire_->write(AS5600_STATUS_REG);
+  // Завершить соединение
+  _wire_->endTransmission();
+  // Запросить 5 байт данных по адресу
+  _wire_->requestFrom(AS5600_I2C_ADDRESS, (uint8_t)5);
+  // Прочитать данные из буфера
+  if (_wire_->available() >= 1 ) {
+    _registers[9] = _wire_->read(); // AS5600_STATUS_REG (0x0B)
+    _registers[10] = _wire_->read(); // AS5600_OUT_REG_RAW_ANGLE_H (0x0C)
+    _registers[11] = _wire_->read(); // AS5600_OUT_REG_RAW_ANGLE_L (0x0D)
+    _registers[12] = _wire_->read(); // AS5600_OUT_REG_ANGLE_H (0x0E)
+    _registers[13] = _wire_->read(); // AS5600_OUT_REG_ANGLE_L (0x0F)
+  }
+  // Завершить соединение
+  _wire_->endTransmission();
+
+  // Начать передачу по адресу
+  _wire_->beginTransmission(AS5600_I2C_ADDRESS);
+  // Отправить адрес регистра 0x1A
+  _wire_->write(AS5600_STATUS_REG_AGC);
+  // Завершить соединение
+  _wire_->endTransmission();
+  // Запросить 3 байта данных по адресу
+  _wire_->requestFrom(AS5600_I2C_ADDRESS, (uint8_t)3);
+  // Прочитать данные из буфера
+  if (_wire_->available() >= 1 ) {
+    _registers[14] = _wire_->read(); // AS5600_STATUS_REG_AGC (0x1A)
+    _registers[15] = _wire_->read(); // AS5600_STATUS_REG_MAGNITUDE_H (0x1B)
+    _registers[16] = _wire_->read(); // AS5600_STATUS_REG_MAGNITUDE_L (0x1C)
+  }
+  // Завершить соединение
+  _wire_->endTransmission();
+
+  // Начать передачу по адресу
+  _wire_->beginTransmission(AS5600_I2C_ADDRESS);
+  // Отправить адрес регистра 0xFF
+  _wire_->write(AS5600_BURN_REG);
+  // Завершить соединение
+  _wire_->endTransmission();
+  // Запросить 1 байт данных по адресу
+  _wire_->requestFrom(AS5600_I2C_ADDRESS, (uint8_t)1);
+  // Прочитать данные из буфера
+  if (_wire_->available() >= 1 ) {
+    _registers[17] = _wire_->read(); // AS5600_BURN_REG (0xFF)
+  }
+  // Завершить соединение
+  _wire_->endTransmission();
+
+  return AS5600_DEFAULT_REPORT_OK;
+}
+/*
  * @brief: установить новое минимальное значение срабатывания кнопки
  * @param _btn_min_agc: нижняя граница срабатывания кнопки
  */
@@ -341,6 +427,20 @@ byte AS5600::getBurnPositionsCount(void) {
   AS_SendFirstRegister(AS5600_CONFIG_REG_ZMCO);
   return AS_RequestSingleRegister();
 }
+/*
+ * @brief: получить количество записей значений в ZPOS и MPOS через BURN_ANGLE 0x80 в регистр BURN
+ * @note: метод работает через ссылку
+ * @note: ZMCO(1:0)
+ * @return:
+ *  0 - заводское значение
+ *  1 - в ZPOS записано один раз
+ *  2 - в ZPOS записано два раза
+ *  3 - в ZPOS записано три раза
+ */
+void AS5600::getBurnPositionsCount(byte &_burn_positions_count) {
+  AS_SendFirstRegister(AS5600_CONFIG_REG_ZMCO);
+  _burn_positions_count = AS_RequestSingleRegister();
+}
 /* 
  * @brief: получить значение начального положения из регистра ZPOS(11:0) (начальный угол)
  * @return:
@@ -349,6 +449,16 @@ byte AS5600::getBurnPositionsCount(void) {
 word AS5600::getZeroPosition(void) {
   AS_SendFirstRegister(AS5600_CONFIG_REG_ZPOS_H);
   return AS_RequestPairRegisters();
+}
+/* 
+ * @brief: получить значение начального положения из регистра ZPOS(11:0) (начальный угол)
+ * @note: метод работает через ссылку
+ * @return:
+ *  0 - 4095
+ */
+void AS5600::getZeroPosition(word &_zero_position) {
+  AS_SendFirstRegister(AS5600_CONFIG_REG_ZPOS_H);
+  _zero_position = AS_RequestPairRegisters();
 }
 /* 
  * @brief: установить новое начальное положение в регистр ZPOS(11:0)
@@ -400,6 +510,16 @@ word AS5600::getMaxPosition(void) {
   return AS_RequestPairRegisters();
 }
 /* 
+ * brief: получить значение конечного положения из регистра MPOS(11:0) (конечный угол)
+ * @note: метод работает через ссылку
+ * @return:
+ *  0 - 4095
+ */
+void AS5600::getMaxPosition(word &_max_position) {
+  AS_SendFirstRegister(AS5600_CONFIG_REG_MPOS_H);
+  _max_position = AS_RequestPairRegisters();
+}
+/* 
  * @brief: установить новое конечное положение в регистр MPOS(11:0)
  * @param _max_position:
  *  0 - 4095
@@ -447,6 +567,16 @@ bool AS5600::setMaxPositionViaRawAngleVerify(void) {
 word AS5600::getMaxAngle(void) {
   AS_SendFirstRegister(AS5600_CONFIG_REG_MANG_H);
   return AS_RequestPairRegisters();
+}
+/* 
+ * @brief: получить значение максимального угла из регистра MANG(11:0)
+ * @note: метод работает через ссылку
+ * @return:
+ *  0 - 4095
+ */
+void AS5600::getMaxAngle(word &_max_angle) {
+  AS_SendFirstRegister(AS5600_CONFIG_REG_MANG_H);
+  _max_angle = AS_RequestPairRegisters();
 }
 /* 
  * @brief: установить новое значение максимального угла в регистр MANG(11:0)
@@ -497,6 +627,15 @@ word AS5600::getRawConfigurationValue(void) {
   return AS_RequestPairRegisters();
 }
 /* 
+ * @brief: получить значение конфигураций из регистра CONF(13:0)
+ * @note: метод работает через ссылку
+ * @return: целое шестнадцатиричное число
+ */
+void AS5600::getRawConfigurationValue(word &_confuration_value) {
+  AS_SendFirstRegister(AS5600_CONFIG_REG_CONF_H);
+  _confuration_value = AS_RequestPairRegisters();
+}
+/* 
  * @brief: установить новое значение конфигураций в регистр CONF(13:0)
  * @param _confuration_value: целое шестнадцатиричное число
  */
@@ -524,6 +663,19 @@ bool AS5600::setRawConfigurationValueVerify(word _confuration_value) {
 AS5600PowerModes AS5600::getPowerMode(void) {
   AS_SendFirstRegister(AS5600_CONFIG_REG_CONF_L);
   return (AS5600PowerModes)(AS_RequestSingleRegister() & 0x03); // 0x03=0b00000011
+}
+/*
+ * @brief: получить значение текущего режима питания. биты (PM:0,PM:1) регистра CONF(1:0)
+ * @note: метод работает через ссылку
+ * @return: 
+ *  AS5600_NOM_POWER_MODE
+ *  AS5600_LOW_POWER_MODE_1
+ *  AS5600_LOW_POWER_MODE_2
+ *  AS5600_LOW_POWER_MODE_3
+ */
+void AS5600::getPowerMode(AS5600PowerModes &_power_mode) {
+  AS_SendFirstRegister(AS5600_CONFIG_REG_CONF_L);
+  _power_mode = (AS5600PowerModes)(AS_RequestSingleRegister() & 0x03); // 0x03=0b00000011
 }
 /*
  * @brief: установить новое значение режима питания. биты (PM:0,PM:1) регистра CONF(1:0)
@@ -626,6 +778,19 @@ AS5600Hysteresis AS5600::getHysteresis(void) {
   return (AS5600Hysteresis)((AS_RequestSingleRegister() >> AS5600_CONF_BIT_HYST_0) & 0x03); // 0x03=0b00000011
 }
 /*
+ * @brief: получить установленное значение гистерезиса. биты (HYST:0,HYST:1) регистра CONF(1:0)
+ * @note: метод работает через ссылку
+ * @return:
+ *  AS5600_HYSTERESIS_OFF
+ *  AS5600_HYSTERESIS_1_LSB
+ *  AS5600_HYSTERESIS_2_LSB
+ *  AS5600_HYSTERESIS_3_LSB
+ */
+void AS5600::getHysteresis(AS5600Hysteresis &_hysteresis) {
+  AS_SendFirstRegister(AS5600_CONFIG_REG_CONF_L);
+  _hysteresis = (AS5600Hysteresis)((AS_RequestSingleRegister() >> AS5600_CONF_BIT_HYST_0) & 0x03); // 0x03=0b00000011
+}
+/*
  * @brief: установить новые значения гистерезиса. биты (HYST:0,HYST:1) регистра CONF(3:2)
  * @param _hysteresis:
  *  AS5600_HYSTERESIS_OFF
@@ -725,6 +890,18 @@ AS5600OutputStage AS5600::getOutputStage(void) {
   return (AS5600OutputStage)((AS_RequestSingleRegister() >> AS5600_CONF_BIT_OUTS_0) & 0x03); // 0x03=0b00000011
 }
 /*
+ * @brief: получить режим работы контакта OUT
+ * @note: метод работает через ссылку
+ * @return:
+ *  AS5600_OUTPUT_ANALOG_FULL_RANGE
+ *  AS5600_OUTPUT_ANALOG_REDUCED_RANGE
+ *  AS5600_OUTPUT_DIGITAL_PWM
+ */
+void AS5600::getOutputStage(AS5600OutputStage &_output_stage) {
+  AS_SendFirstRegister(AS5600_CONFIG_REG_CONF_L);
+  _output_stage = (AS5600OutputStage)((AS_RequestSingleRegister() >> AS5600_CONF_BIT_OUTS_0) & 0x03); // 0x03=0b00000011
+}
+/*
  * @brief: установить режим работы контакта OUT
  * @param _output_stage:
  *  AS5600_OUTPUT_ANALOG_FULL_RANGE
@@ -806,6 +983,19 @@ bool AS5600::enableOutputDigitalPWMVerify(void) {
 AS5600PWMFrequency AS5600::getPWMFrequency(void) {
   AS_SendFirstRegister(AS5600_CONFIG_REG_CONF_L);
   return (AS5600PWMFrequency)((AS_RequestSingleRegister() >> AS5600_CONF_BIT_PWMF_0) & 0x03); // 0x03=0b00000011
+}
+/*
+ * @brief: получить чатоту ШИМ
+ * @note: метод работает через ссылку
+ * @return:
+ *  AS5600_PWM_FREQUENCY_115HZ
+ *  AS5600_PWM_FREQUENCY_230HZ
+ *  AS5600_PWM_FREQUENCY_460HZ
+ *  AS5600_PWM_FREQUENCY_920HZ
+ */
+void AS5600::getPWMFrequency(AS5600PWMFrequency &_pwm_frequency) {
+  AS_SendFirstRegister(AS5600_CONFIG_REG_CONF_L);
+  _pwm_frequency = (AS5600PWMFrequency)((AS_RequestSingleRegister() >> AS5600_CONF_BIT_PWMF_0) & 0x03); // 0x03=0b00000011
 }
 /*
  * @brief: установить новое значение частоты ШИМ
@@ -906,6 +1096,19 @@ bool AS5600::enablePWMFrequency920HzVerify(void) {
 AS5600SlowFilter AS5600::getSlowFilter(void) {
   AS_SendFirstRegister(AS5600_CONFIG_REG_CONF_H);
   return (AS5600SlowFilter)((AS_RequestSingleRegister() >> AS5600_CONF_BIT_SF_0) & 0x03); // 0x03=0b00000011
+}
+/*
+ * @brief: получить значение коэффициента медленной фильтрации
+ * @note: метод работает через ссылку
+ * @return:
+ *  AS5600_SLOW_FILTER_16X
+ *  AS5600_SLOW_FILTER_8X
+ *  AS5600_SLOW_FILTER_4X
+ *  AS5600_SLOW_FILTER_2X
+ */
+void AS5600::getSlowFilter(AS5600SlowFilter &_slow_filter) {
+  AS_SendFirstRegister(AS5600_CONFIG_REG_CONF_H);
+  _slow_filter = (AS5600SlowFilter)((AS_RequestSingleRegister() >> AS5600_CONF_BIT_SF_0) & 0x03); // 0x03=0b00000011
 }
 /*
  * @brief: установить новое значение коэффициента медленной фильтрации
@@ -1010,6 +1213,23 @@ bool AS5600::enableSlowFilter2xVerify(void) {
 AS5600FastFilterThreshold AS5600::getFastFilterThreshold(void) {
   AS_SendFirstRegister(AS5600_CONFIG_REG_CONF_H);
   return (AS5600FastFilterThreshold)((AS_RequestSingleRegister() >> AS5600_CONF_BIT_FTH_0) & 0x07); // 0x07=0b00000111
+}
+/*
+ * @brief: получить значение порога быстрой фильтрации
+ * @note: метод работает через ссылку
+ * @return:
+ *  AS5600_FAST_FILTER_THRESHOLD_SLOW_FILTER_ONLY
+ *  AS5600_FAST_FILTER_THRESHOLD_6_LSB
+ *  AS5600_FAST_FILTER_THRESHOLD_7_LSB
+ *  AS5600_FAST_FILTER_THRESHOLD_9_LSB
+ *  AS5600_FAST_FILTER_THRESHOLD_18_LSB
+ *  AS5600_FAST_FILTER_THRESHOLD_21_LSB
+ *  AS5600_FAST_FILTER_THRESHOLD_24_LSB
+ *  AS5600_FAST_FILTER_THRESHOLD_10_LSB
+ */
+void AS5600::getFastFilterThreshold(AS5600FastFilterThreshold &_fast_filter_thredhold) {
+  AS_SendFirstRegister(AS5600_CONFIG_REG_CONF_H);
+  _fast_filter_thredhold = (AS5600FastFilterThreshold)((AS_RequestSingleRegister() >> AS5600_CONF_BIT_FTH_0) & 0x07); // 0x07=0b00000111
 }
 /*
  * @brief: установить новое значение порога быстрой фильтрации
@@ -1228,6 +1448,16 @@ word AS5600::getRawAngle(void) {
   return AS_RequestPairRegisters();
 }
 /* 
+ * @brief: получить чистое значение угла из регистра RAW ANGLE(11:0)
+ * @note: метод работает через ссылку
+ * @return:
+ *  0 - 4095
+ */
+void AS5600::getRawAngle(word &_raw_angle) {
+  AS_SendFirstRegister(AS5600_OUT_REG_RAW_ANGLE_H);
+  _raw_angle = AS_RequestPairRegisters();
+}
+/* 
  * @brief: получить значение угла в градусах
  * @return:
  *  0.00 - 360.00
@@ -1236,12 +1466,30 @@ float AS5600::getDegreesAngle(void) {
   return ((float)getRawAngle() * 360) / 4096;
 }
 /* 
+ * @brief: получить значение угла в градусах
+ * @note: метод работает через ссылку
+ * @return:
+ *  0.00 - 360.00
+ */
+void AS5600::getDegreesAngle(float &_degrees_angle) {
+  _degrees_angle = ((float)getRawAngle() * 360) / 4096;
+}
+/* 
  * @brief: получить значение угла в радианах
  * @return:
- *  0.00 - 6.29
+ *  0.00 - 6.28
  */
 float AS5600::getRadiansAngle(void) {
   return (getDegreesAngle() * PI) / 180;
+}
+/* 
+ * @brief: получить значение угла в радианах
+ * @note: метод работает через ссылку
+ * @return:
+ *  0.00 - 6.28
+ */
+void AS5600::getRadiansAngle(float &_radians_angle) {
+  _radians_angle = (getDegreesAngle() * PI) / 180;
 }
 /* 
  * @brief: получить масштабированное значение угла из регистра ANGLE(11:0)
@@ -1252,6 +1500,16 @@ float AS5600::getRadiansAngle(void) {
 word AS5600::getScaledAngle(void) {
   AS_SendFirstRegister(AS5600_OUT_REG_ANGLE_H);
   return AS_RequestPairRegisters();
+}
+/* 
+ * @brief: получить масштабированное значение угла из регистра ANGLE(11:0)
+ * @note: учитываются значения в регистрах ZPOS, MPOS, MANG. метод работает через ссылку
+ * @return:
+ *  0 - 4095
+ */
+void AS5600::getScaledAngle(word &_scaled_angle) {
+  AS_SendFirstRegister(AS5600_OUT_REG_ANGLE_H);
+  _scaled_angle = AS_RequestPairRegisters();
 }
 /**************************/
 /**** STATUS REGISTERS ****/
@@ -1268,6 +1526,20 @@ word AS5600::getScaledAngle(void) {
 AS5600StatusReports AS5600::getStatus(void) {
   AS_SendFirstRegister(AS5600_STATUS_REG);
   return (AS5600StatusReports)((AS_RequestSingleRegister() >> AS5600_STATUS_BIT_MH_3) & 0x07); // 0x07 = 0b00000111
+}
+/*
+ * @brief: получить значение регистра STATUS
+ * @note: метод работает через ссылку
+ * @return:
+ *  AS5600_STATUS_REPORT_MD0_ML0_MH_0 - MD = 0, ML = 0, MH = 0
+ *  AS5600_STATUS_REPORT_MD0_ML1_MH_0 - MD = 0, ML = 1, MH = 0
+ *  AS5600_STATUS_REPORT_MD1_ML0_MH_0 - MD = 1, ML = 0, MH = 0
+ *  AS5600_STATUS_REPORT_MD1_ML0_MH_1 - MD = 1, ML = 0, MH = 1
+ *  AS5600_STATUS_REPORT_MD1_ML1_MH_0 - MD = 1, ML = 1, MH = 0
+ */
+void AS5600::getStatus(AS5600StatusReports &_status) {
+  AS_SendFirstRegister(AS5600_STATUS_REG);
+  _status = (AS5600StatusReports)((AS_RequestSingleRegister() >> AS5600_STATUS_BIT_MH_3) & 0x07); // 0x07 = 0b00000111
 }
 /*
  * @brief: определить наличие магнита. регистр STATUS (MD:5)
@@ -1309,6 +1581,17 @@ byte AS5600::getAutomaticGainControl(void) {
   AS_SendFirstRegister(AS5600_STATUS_REG_AGC);
   return AS_RequestSingleRegister();
 }
+/*
+ * @brief: получить значение автоматического усиления из регистра AGC(7:0)
+ * @note: метод работает через ссылку
+ * @return:
+ *  0 - 255, при VCC = 5V
+ *  0 - 128, при VCC = 3.3V
+ */
+void AS5600::getAutomaticGainControl(byte &_agc) {
+  AS_SendFirstRegister(AS5600_STATUS_REG_AGC);
+  _agc = AS_RequestSingleRegister();
+}
 /* 
  * @brief: получить значение магнитуды из регистра MAGNITUDE(11:0)
  * @return:
@@ -1317,6 +1600,16 @@ byte AS5600::getAutomaticGainControl(void) {
 word AS5600::getMagnitude(void) {
   AS_SendFirstRegister(AS5600_STATUS_REG_MAGNITUDE_H);
   return AS_RequestPairRegisters();
+}
+/* 
+ * @brief: получить значение магнитуды из регистра MAGNITUDE(11:0)
+ * @note: метод работает через ссылку
+ * @return:
+ *  0 - 4095
+ */
+void AS5600::getMagnitude(word &_magnitude) {
+  AS_SendFirstRegister(AS5600_STATUS_REG_MAGNITUDE_H);
+  _magnitude = AS_RequestPairRegisters();
 }
 /************************/
 /**** BURN REGISTERS ****/

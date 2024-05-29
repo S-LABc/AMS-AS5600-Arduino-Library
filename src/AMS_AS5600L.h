@@ -1,13 +1,13 @@
 /* 
  * Класс для Arduino IDE реализующий дополнительные методы
  * для взаимодействия с бесконтактным датчиком положения
- * AS5600L от компании AMS https://ams.com/ams-start
+ * AS5600L от компании AMS https://ams-osram.com/
  * Этот класс основывается на классе AS5600 и является
  * частю бибилиотеки AMS-AS5600-Arduino-Library
  * 
  * Документация к датчику:
- ** https://ams.com/documents/20143/36005/AS5600L_DS000545_3-00.pdf
- ** https://ams.com/en/as5600l
+ ** https://look.ams-osram.com/m/657fca3b775890b7/original/AS5600L-DS000545.pdf
+ ** https://ams-osram.com/products/sensors/position-sensors/ams-as5600l-magnetic-rotary-position-sensor
  *
  * Больше информации в WiKi:
  * https://github.com/S-LABc/AMS-AS5600-Arduino-Library/wiki
@@ -16,7 +16,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.0 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2024. v1.1 / License MIT / Скляр Роман S-LAB
  */
 
 #pragma once
@@ -56,19 +56,23 @@ class AS5600L : public AS5600 {
     bool isConnected(void) override; // Проверка по стандартному алгоритму поиска устройств на шине I2C
 
     virtual byte findDevice(void); // Получить первый доступный адрес на шине I2C. Адрес в конструкторе и методах работы с адресами не нужен
+    virtual void findDevice(byte &_i2c_address); // Тоже самое, но через ссылку
 	
     /* Configuration Registers */
     /** Управление регистром I2C адреса I2CADDR **/
     virtual byte getRegisterAddressI2C(void); // Получить значение I2C адреса из регистра I2CADDR
+    virtual void getRegisterAddressI2C(byte &_i2c_address); // Тоже самое, но через ссылку
     virtual void setRegisterAddressI2C(byte _new_i2c_address); // Установить новое значение I2C адреса в регистр I2CADDR
     virtual bool setRegisterAddressI2CVerify(byte _new_i2c_address); // Тоже самое, но с подтверждением
     /** Управление регистром I2C адреса I2CUPDT (I2CSTRB) **/
     virtual byte getRegisterUpdateI2C(void); // Получить значение I2C адреса из регистра I2CUPDT (I2CSTRB)
+    virtual void getRegisterUpdateI2C(byte &_i2c_address); // Тоже самое, но через ссылку
     virtual void setRegisterUpdateI2C(byte _new_i2c_address); // Установить новое значение I2C адреса в регистр I2CUPDT (I2CSTRB)
     virtual bool setRegisterUpdateI2CVerify(byte _new_i2c_address); // Тоже самое, но с подтверждением
 	
     // Установка и получение I2C адреса датчика
     virtual byte getAddressI2C(void); // Получить нынешнее значение адреса датчика на шине I2C
+    virtual void getAddressI2C(byte &_i2c_address); // Тоже самое, но через ссылку
     virtual void setAddressI2C(byte _new_i2c_address); // Установить новое значение адреса датчика на шине I2C
     virtual bool setAddressI2CVerify(byte _new_i2c_address); // Тоже самое, но с подтверждением
 

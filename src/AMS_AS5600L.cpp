@@ -1,13 +1,13 @@
 /* 
  * Класс для Arduino IDE реализующий дополнительные методы
  * для взаимодействия с бесконтактным датчиком положения
- * AS5600L от компании AMS https://ams.com/ams-start
+ * AS5600L от компании AMS https://ams-osram.com/
  * Этот класс основывается на классе AS5600 и является
  * частю бибилиотеки AMS-AS5600-Arduino-Library
  * 
  * Документация к датчику:
- ** https://ams.com/documents/20143/36005/AS5600L_DS000545_3-00.pdf
- ** https://ams.com/en/as5600l
+ ** https://look.ams-osram.com/m/657fca3b775890b7/original/AS5600L-DS000545.pdf
+ ** https://ams-osram.com/products/sensors/position-sensors/ams-as5600l-magnetic-rotary-position-sensor
  *
  * Больше информации в WiKi:
  * https://github.com/S-LABc/AMS-AS5600-Arduino-Library/wiki
@@ -16,7 +16,7 @@
  ** GitHub - https://github.com/S-LABc
  ** Gmail - romansklyar15@gmail.com
  * 
- * Copyright (C) 2022. v1.0 / License MIT / Скляр Роман S-LAB
+ * Copyright (C) 2024. v1.1 / License MIT / Скляр Роман S-LAB
  */
 
 #include "AMS_AS5600L.h"
@@ -184,6 +184,30 @@ byte AS5600L::findDevice(void) {
 
   return AS5600_DEFAULT_REPORT_ERROR;
 }
+/*
+ * @brief: получить первый доступный адрес на шине I2C
+ * @note: метод работает через ссылку
+ * @note: используется алгоритм стандартного поиска устройств на шина I2C
+ *  применять с единственным датчиком на шине, адрес которого неизвестен
+ * @return:
+ *  AS5600_DEFAULT_REPORT_ERROR - не найден
+ *  0x08 - 0x77 (8 - 119) - найден на одном из адресов
+ */
+void AS5600L::findDevice(byte &_i2c_address) {
+  byte error, address;
+ 
+  for (address = RESERVED_I2C_ADDR_L + 1; address < RESERVED_I2C_ADDR_H; address++) {
+    _wire_->beginTransmission(address);
+    error = _wire_->endTransmission();
+ 
+    if (error == 0) {
+      _i2c_address = address;
+      return;
+    }   
+  }
+
+  _i2c_address = AS5600_DEFAULT_REPORT_ERROR;
+}
 /*********************************/
 /**** CONFIGURATION REGISTERS ****/
 /*********************************/
@@ -196,6 +220,17 @@ byte AS5600L::findDevice(void) {
 byte AS5600L::getRegisterAddressI2C(void) {
   AS_SendFirstRegister(AS5600L_CONFIG_REG_I2CADDR);
   return (AS_RequestSingleRegister() >> 1);
+}
+/* 
+ * @brief: получить значение I2C адреса из регистра I2CADDR(6:0)
+ * @note: метод работает через ссылку
+ * @note: адреса вне диапазона зарезервированы протоколом I2C
+ * @return:
+ *  0x08 - 0x77 (8 - 119)
+ */
+void AS5600L::getRegisterAddressI2C(byte &_i2c_address) {
+  AS_SendFirstRegister(AS5600L_CONFIG_REG_I2CADDR);
+  _i2c_address = (AS_RequestSingleRegister() >> 1);
 }
 /* 
  * @brief: установить новое значение I2C адреса в регистр I2CADDR(6:0)
@@ -229,6 +264,17 @@ byte AS5600L::getRegisterUpdateI2C(void) {
   return (AS_RequestSingleRegister() >> 1);
 }
 /* 
+ * @brief: получить значение I2C адреса из регистра I2CUPDT I2CSTRB(6:0)
+ * @note: метод работает через ссылку
+ * @note: адреса вне диапазона зарезервированы протоколом I2C
+ * @return:
+ *  0x08 - 0x77 (8 - 119)
+ */
+void AS5600L::getRegisterUpdateI2C(byte &_i2c_address) {
+  AS_SendFirstRegister(AS5600L_CONFIG_REG_I2CUPDT);
+  _i2c_address = (AS_RequestSingleRegister() >> 1);
+}
+/* 
  * @brief: установить новое значение I2C адреса в регистр I2CUPDT I2CSTRB(6:0)
  * @param _new_i2c_address: новое значение адреса I2C
  *  диапазон 0x08 - 0x77 (8 - 119)
@@ -258,6 +304,17 @@ bool AS5600L::setRegisterUpdateI2CVerify(byte _new_i2c_address) {
 byte AS5600L::getAddressI2C(void) {
   _i2c_address_ = getRegisterUpdateI2C();
   return _i2c_address_;
+}
+/* 
+ * @brief: получить значение I2C адреса датчика
+ * @note: метод работает через ссылку
+ * @note: адреса вне диапазона зарезервированы протоколом I2C
+ * @return:
+ *  0x08 - 0x77 (8 - 119)
+ */
+void AS5600L::getAddressI2C(byte &_i2c_address) {
+  _i2c_address_ = getRegisterUpdateI2C();
+  _i2c_address = _i2c_address_;
 }
 /* 
  * @brief: установить новое значение I2C адреса датчика
